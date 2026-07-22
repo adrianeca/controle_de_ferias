@@ -283,6 +283,7 @@ body{font-family:var(--font);background:var(--gray-100);color:var(--navy-800);mi
             <tr>
               <th>Funcionário</th>
               <th>Empresa</th>
+              <th>Admissão</th>
               <th>Vencimento</th>
               <th>Limite para Gozar</th>
               <th>Dias p/ Limite</th>
@@ -450,7 +451,7 @@ function applyFilters() {
   state.filtered = state.data.records.filter(function(r) {
     if (empF   && norm(r.empresa) !== norm(empF)) return false;
     if (stF    && r.status !== stF)               return false;
-    if (search && norm(r.nome).indexOf(search) === -1 && norm(r.empresa).indexOf(search) === -1) return false;
+    if (search && norm(r.nome).indexOf(search) === -1 && norm(r.empresa).indexOf(search) === -1 && norm(r.cargo||'').indexOf(search) === -1) return false;
     return true;
   });
 
@@ -512,9 +513,13 @@ function renderTable() {
       ? '<button class="reg-btn" onclick="abrirModal(\'' + esc(r.chave) + '\')">Registrar</button>'
       : '<button class="reg-btn" onclick="abrirModal(\'' + esc(r.chave) + '\')">Ver períodos</button>';
 
+    var nomeCell = '<span style="font-weight:600">' + esc(r.nome) + '</span>' +
+      (r.cargo ? '<br><span style="font-size:.72rem;color:var(--gray-400);font-weight:400">' + esc(r.cargo) + '</span>' : '');
+
     return '<tr class="' + cfg.rowCls + '">' +
-      '<td style="font-weight:600">' + esc(r.nome) + '</td>' +
+      '<td>' + nomeCell + '</td>' +
       '<td>' + esc(r.empresa) + '</td>' +
+      '<td style="white-space:nowrap">' + esc(r.admissao || '') + '</td>' +
       '<td>' + esc(r.vencimento) + '</td>' +
       '<td style="font-weight:600">' + esc(r.limite) + '</td>' +
       '<td>' + diffTxt + '</td>' +
@@ -541,6 +546,8 @@ function abrirModal(chave) {
   // Info card
   document.getElementById('modalFuncInfo').innerHTML =
     '<div class="func-info-row">' +
+      (rec.cargo    ? infoItem('Cargo',             esc(rec.cargo))    : '') +
+      (rec.admissao ? infoItem('Admissão',          esc(rec.admissao)) : '') +
       infoItem('Vencimento', rec.vencimento) +
       infoItem('Limite para Gozar', '<strong style="color:' + limitColor(rec) + '">' + rec.limite + '</strong>') +
       infoItem('Direito', rec.diasDireito + ' dias') +
@@ -654,6 +661,8 @@ function salvarPeriodo() {
       if (rec) {
         document.getElementById('modalFuncInfo').innerHTML =
           '<div class="func-info-row">' +
+            (rec.cargo    ? infoItem('Cargo',         esc(rec.cargo))    : '') +
+            (rec.admissao ? infoItem('Admissão',      esc(rec.admissao)) : '') +
             infoItem('Vencimento', rec.vencimento) +
             infoItem('Limite para Gozar', '<strong style="color:' + limitColor(rec) + '">' + rec.limite + '</strong>') +
             infoItem('Direito', rec.diasDireito + ' dias') +
@@ -725,10 +734,10 @@ function exportCSV() {
   var rows = state.filtered;
   if (!rows.length) { alert('Nenhum registro para exportar.'); return; }
   var STATUS_LABEL = { vencido:'Vencido', critico:'Crítico', atencao:'Atenção', ok:'OK', gozadas:'Gozadas' };
-  var header = ['Funcionário','Empresa','Vencimento','Limite para Gozar','Dias Restantes até Limite','Direito (dias)','Gozado (dias)','Restante (dias)','Status'];
+  var header = ['Funcionário','Cargo','Empresa','Admissão','Vencimento','Limite para Gozar','Dias Restantes até Limite','Direito (dias)','Gozado (dias)','Restante (dias)','Status'];
   var lines  = ['﻿' + header.map(csvEscape).join(',')];
   rows.forEach(function(r) {
-    lines.push([r.nome, r.empresa, r.vencimento, r.limite, r.diffDias, r.diasDireito, r.diasGozados, r.diasRestantes, STATUS_LABEL[r.status]||r.status].map(csvEscape).join(','));
+    lines.push([r.nome, r.cargo||'', r.empresa, r.admissao||'', r.vencimento, r.limite, r.diffDias, r.diasDireito, r.diasGozados, r.diasRestantes, STATUS_LABEL[r.status]||r.status].map(csvEscape).join(','));
   });
   var blob = new Blob([lines.join('\r\n')], {type:'text/csv;charset=utf-8;'});
   var url  = URL.createObjectURL(blob);

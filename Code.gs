@@ -17,7 +17,7 @@ const ALERTA_CRITICO = 30;
 const ALERTA_ATENCAO = 60;
 
 // Colunas da aba VENCIMENTOS (base 0)
-const VEN = { NOME: 0, EMPRESA: 1, VENCIMENTO: 2, DIAS_DIREITO: 3, ATIVO: 4 };
+const VEN = { NOME: 0, EMPRESA: 1, CARGO: 2, ADMISSAO: 3, VENCIMENTO: 4, DIAS_DIREITO: 5, ATIVO: 6 };
 
 // Colunas da aba FERIAS (base 0)
 const FER = {
@@ -141,8 +141,8 @@ function getVenSheet_() {
   let s = ss.getSheetByName('VENCIMENTOS');
   if (!s) {
     s = ss.insertSheet('VENCIMENTOS');
-    s.appendRow(['Nome', 'Empresa', 'Vencimento', 'Dias Direito', 'Ativo']);
-    s.getRange(1, 1, 1, 5).setFontWeight('bold');
+    s.appendRow(['Nome', 'Empresa', 'Cargo', 'Admissao', 'Vencimento', 'Dias Direito', 'Ativo']);
+    s.getRange(1, 1, 1, 7).setFontWeight('bold');
   }
   return s;
 }
@@ -199,8 +199,10 @@ function getVencimentosData(token) {
     const atv = norm_(r[VEN.ATIVO] || '');
     if (atv === 'inativo' || atv === 'false' || atv === 'não' || atv === 'nao' || atv === '0') continue;
 
-    const empresa = String(r[VEN.EMPRESA] || '').trim();
-    const venRaw  = r[VEN.VENCIMENTO];
+    const empresa  = String(r[VEN.EMPRESA]   || '').trim();
+    const cargo    = String(r[VEN.CARGO]     || '').trim();
+    const admissao = r[VEN.ADMISSAO] ? fmtData_(r[VEN.ADMISSAO] instanceof Date ? r[VEN.ADMISSAO] : parseDate_(String(r[VEN.ADMISSAO]))) : '';
+    const venRaw   = r[VEN.VENCIMENTO];
     if (!venRaw) continue;
 
     const vencDate = venRaw instanceof Date ? new Date(venRaw.getTime()) : parseDate_(String(venRaw));
@@ -226,7 +228,7 @@ function getVencimentosData(token) {
 
     if (empresa) empSet[empresa] = true;
     records.push({
-      chave, nome, empresa,
+      chave, nome, empresa, cargo, admissao,
       vencimento:   fmtData_(vencDate),
       limite:       fmtData_(limite),
       diffDias,
