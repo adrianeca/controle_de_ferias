@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Controle de Férias — BRASAS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy-900:#0a1628;--navy-800:#0f2035;--navy-700:#162d4a;
+  --navy-600:#1e3a5f;--navy-500:#2a4d76;--navy-400:#3d6b99;
+  --navy-300:#5a8aba;--navy-200:#89afd4;--navy-100:#c0d4e9;--navy-50:#e8eff7;
+  --success-600:#15803d;--success-500:#22c55e;--success-100:#dcfce7;
+  --danger-600:#dc2626;--danger-500:#ef4444;--danger-100:#fee2e2;
+  --warning-500:#f59e0b;
+  --orange-600:#c2410c;--orange-100:#fff7ed;
+  --white:#fff;
+  --gray-50:#f8fafc;--gray-100:#f1f5f9;--gray-200:#e2e8f0;
+  --gray-300:#cbd5e1;--gray-400:#94a3b8;--gray-500:#64748b;--gray-600:#475569;
+  --font:'DM Sans',-apple-system,sans-serif;
+  --radius:14px;
+  --shadow-sm:0 1px 3px rgba(10,22,40,.06);
+  --shadow-md:0 4px 16px rgba(10,22,40,.1);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font);background:var(--gray-100);color:var(--navy-800);min-height:100vh;line-height:1.5}
+
+/* ── OVERLAYS ── */
+.overlay{position:fixed;inset:0;z-index:9999;background:linear-gradient(135deg,var(--navy-900),var(--navy-700) 60%,var(--navy-600));display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px}
+.spinner{width:44px;height:44px;border:3px solid rgba(255,255,255,.15);border-top-color:#fff;border-radius:50%;animation:spin .75s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.overlay p{color:var(--navy-200);font-size:.9rem}
+.error-txt{color:#fca5a5;font-weight:600;font-size:.95rem;max-width:360px;text-align:center;padding:0 16px}
+
+/* ── HEADER ── */
+#screenMain{display:none;flex-direction:column;min-height:100vh}
+.app-header{background:var(--navy-900);border-bottom:1px solid rgba(255,255,255,.06);padding:14px 32px;display:flex;align-items:center;gap:20px;box-shadow:0 2px 16px rgba(10,22,40,.35);position:sticky;top:0;z-index:100}
+.header-brand{display:flex;align-items:center;gap:12px}
+.header-brand-icon{width:38px;height:38px;border-radius:10px;background:linear-gradient(135deg,var(--navy-600),var(--navy-400));display:flex;align-items:center;justify-content:center;font-size:1rem}
+.header-brand h1{font-size:1rem;font-weight:700;color:#fff;letter-spacing:-.01em}
+.header-brand p{font-size:.7rem;color:var(--navy-300);margin-top:1px}
+.header-right{margin-left:auto;display:flex;align-items:center;gap:10px}
+.hub-back-btn{display:flex;align-items:center;gap:5px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:6px 13px;font-family:var(--font);font-size:.8rem;font-weight:600;color:var(--navy-200);text-decoration:none;cursor:pointer;transition:background .15s,color .15s;white-space:nowrap}
+.hub-back-btn:hover{background:rgba(255,255,255,.14);color:#fff}
+.user-badge{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:6px 14px}
+.user-badge-name{font-size:.82rem;font-weight:600;color:#fff}
+.user-badge-role{font-size:.7rem;color:var(--navy-300)}
+
+/* ── BODY ── */
+.app-body{flex:1;padding:28px 32px;width:100%}
+
+/* ── ALERT CARDS ── */
+.alert-grid{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:20px}
+.alert-card{background:var(--white);border:1px solid var(--gray-200);border-radius:12px;padding:14px 18px;display:flex;align-items:center;gap:14px;box-shadow:var(--shadow-sm);min-width:160px;flex:1}
+.alert-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0}
+.alert-value{font-size:1.6rem;font-weight:700;line-height:1;color:var(--navy-800)}
+.alert-label{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--gray-400);margin-top:2px}
+.alert-card.vencido .alert-icon{background:var(--danger-100)}
+.alert-card.critico .alert-icon{background:var(--orange-100)}
+.alert-card.atencao .alert-icon{background:#fefce8}
+.alert-card.ok      .alert-icon{background:var(--success-100)}
+.alert-card.gozadas .alert-icon{background:var(--gray-100)}
+.alert-card.total   .alert-icon{background:var(--navy-50)}
+
+/* ── FILTER ── */
+.filter-card{background:var(--white);border:1px solid var(--gray-200);border-radius:var(--radius);padding:16px 20px;margin-bottom:18px;box-shadow:var(--shadow-sm)}
+.filter-row{display:flex;gap:20px;flex-wrap:wrap;align-items:flex-end}
+.filter-group{display:flex;flex-direction:column;gap:5px}
+.selector-label{font-size:.67rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--gray-400)}
+.emp-dropdown{min-width:180px;padding:9px 12px;border:1.5px solid var(--gray-200);border-radius:8px;font-family:var(--font);font-size:.88rem;color:var(--navy-800);background:var(--white);outline:none;cursor:pointer;transition:border-color .15s}
+.emp-dropdown:focus{border-color:var(--navy-500);box-shadow:0 0 0 3px rgba(42,77,118,.12)}
+.search-input{min-width:220px;padding:9px 12px;border:1.5px solid var(--gray-200);border-radius:8px;font-family:var(--font);font-size:.88rem;color:var(--navy-800);outline:none;transition:border-color .15s}
+.search-input:focus{border-color:var(--navy-500);box-shadow:0 0 0 3px rgba(42,77,118,.12)}
+.filter-actions{display:flex;gap:8px;margin-left:auto;align-items:flex-end}
+.clear-filters-btn{background:var(--white);border:1.5px solid var(--gray-200);border-radius:8px;padding:9px 16px;font-family:var(--font);font-size:.85rem;font-weight:600;color:var(--gray-500);cursor:pointer;transition:border-color .15s,color .15s}
+.clear-filters-btn:hover{border-color:var(--navy-300);color:var(--navy-700)}
+.export-csv-btn{display:inline-flex;align-items:center;gap:6px;background:var(--white);border:1.5px solid var(--navy-300);border-radius:8px;padding:9px 16px;font-family:var(--font);font-size:.85rem;font-weight:600;color:var(--navy-700);cursor:pointer;transition:background .15s}
+.export-csv-btn:hover{background:var(--navy-50)}
+
+/* ── TABLE CARD ── */
+.table-card{background:var(--white);border:1px solid var(--gray-200);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow-sm)}
+.table-card-header{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;padding:18px 20px;border-bottom:1px solid var(--gray-200)}
+.table-card-title{font-size:.98rem;font-weight:700;color:var(--navy-800)}
+.table-card-sub{font-size:.78rem;color:var(--gray-400);margin-top:2px}
+.records-pill{background:var(--gray-100);color:var(--gray-600);border-radius:999px;font-size:.78rem;font-weight:700;padding:5px 14px;white-space:nowrap}
+
+/* ── MAIN TABLE ── */
+.table-wrap{overflow-x:auto}
+.main-table{width:100%;border-collapse:collapse;font-size:.83rem}
+.main-table th,.main-table td{padding:10px 12px;text-align:center;border-bottom:1px solid var(--gray-200)}
+.main-table th{background:var(--navy-800);color:#fff;font-weight:700;font-size:.68rem;text-transform:uppercase;letter-spacing:.04em;white-space:nowrap;border-bottom:1px solid var(--navy-600);border-left:1px solid rgba(255,255,255,.08)}
+.main-table th:first-child{border-left:none;text-align:left}
+.main-table td:first-child{text-align:left}
+.main-table td:nth-child(2){text-align:left}
+.main-table tbody tr:hover{background:var(--gray-50)}
+.main-table tbody tr.row-vencido td:first-child{border-left:3px solid var(--danger-500)}
+.main-table tbody tr.row-critico td:first-child{border-left:3px solid #f97316}
+.main-table tbody tr.row-atencao td:first-child{border-left:3px solid var(--warning-500)}
+.main-table tbody tr.row-ok     td:first-child{border-left:3px solid var(--success-500)}
+.main-table tbody tr.row-gozadas td:first-child{border-left:3px solid var(--gray-300)}
+
+/* ── STATUS PILLS ── */
+.status-pill{display:inline-block;padding:3px 10px;border-radius:999px;font-size:.72rem;font-weight:700;white-space:nowrap}
+.pill-vencido{background:var(--danger-100);color:var(--danger-600);border:1px solid rgba(220,38,38,.2)}
+.pill-critico{background:var(--orange-100);color:var(--orange-600);border:1px solid rgba(194,65,12,.2)}
+.pill-atencao{background:#fefce8;color:#ca8a04;border:1px solid rgba(202,138,4,.2)}
+.pill-ok     {background:var(--success-100);color:var(--success-600);border:1px solid rgba(21,128,61,.2)}
+.pill-gozadas{background:var(--gray-100);color:var(--gray-500);border:1px solid var(--gray-200)}
+
+/* ── BUTTONS ── */
+.reg-btn{background:var(--navy-700);color:#fff;border:none;padding:5px 12px;border-radius:7px;font-family:var(--font);font-size:.78rem;font-weight:700;cursor:pointer;transition:background .15s;white-space:nowrap}
+.reg-btn:hover{background:var(--navy-500)}
+.reg-btn:disabled{opacity:.4;cursor:not-allowed}
+.save-btn{background:var(--navy-800);color:#fff;border:none;padding:11px 28px;border-radius:8px;font-family:var(--font);font-size:.9rem;font-weight:700;cursor:pointer;transition:background .15s}
+.save-btn:hover:not(:disabled){background:var(--navy-600)}
+.save-btn:disabled{opacity:.45;cursor:not-allowed}
+.btn-ghost{background:none;border:1.5px solid var(--gray-200);border-radius:8px;padding:10px 18px;font-family:var(--font);font-size:.86rem;font-weight:600;color:var(--gray-500);cursor:pointer;transition:border-color .15s,color .15s}
+.btn-ghost:hover{border-color:var(--gray-300);color:var(--navy-800)}
+.del-period-btn{background:none;border:none;cursor:pointer;color:var(--gray-400);font-size:.9rem;padding:4px 7px;border-radius:6px;transition:background .15s,color .15s}
+.del-period-btn:hover{background:var(--danger-100);color:var(--danger-600)}
+
+/* ── DIAS BAR ── */
+.dias-bar-wrap{display:flex;align-items:center;gap:8px;min-width:120px}
+.dias-bar-bg{flex:1;height:6px;background:var(--gray-200);border-radius:3px;overflow:hidden}
+.dias-bar-fill{height:100%;border-radius:3px;transition:width .3s}
+.dias-bar-fill.fill-full  {background:var(--success-500)}
+.dias-bar-fill.fill-part  {background:var(--warning-500)}
+.dias-bar-fill.fill-none  {background:var(--gray-300)}
+.dias-bar-fill.fill-venc  {background:var(--danger-500)}
+
+/* ── DIFF DIAS BADGE ── */
+.diff-badge{font-size:.75rem;font-weight:700;padding:2px 8px;border-radius:6px}
+.diff-badge.vencido{background:var(--danger-100);color:var(--danger-600)}
+.diff-badge.critico{background:var(--orange-100);color:var(--orange-600)}
+.diff-badge.atencao{background:#fefce8;color:#ca8a04}
+.diff-badge.ok     {background:var(--success-100);color:var(--success-600)}
+.diff-badge.gozadas{background:var(--gray-100);color:var(--gray-500)}
+
+/* ── MODAL ── */
+.modal-backdrop{position:fixed;inset:0;z-index:5000;background:rgba(10,22,40,.5);display:none;align-items:center;justify-content:center;padding:16px}
+.modal-backdrop.open{display:flex}
+.modal-card{background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow-md);width:100%;max-width:560px;max-height:92vh;overflow-y:auto;display:flex;flex-direction:column}
+.modal-header{padding:22px 24px 0;flex-shrink:0}
+.modal-title{font-size:1.05rem;font-weight:700;color:var(--navy-800)}
+.modal-sub{font-size:.83rem;color:var(--gray-500);margin-top:3px}
+.modal-body{padding:16px 24px;flex:1;overflow-y:auto}
+.modal-footer{padding:16px 24px;border-top:1px solid var(--gray-200);display:flex;justify-content:flex-end;gap:10px;flex-shrink:0}
+
+.modal-label{display:block;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--gray-400);margin:14px 0 5px}
+.modal-label:first-child{margin-top:0}
+.modal-input,.modal-select,.modal-textarea{width:100%;padding:9px 12px;border:1.5px solid var(--gray-200);border-radius:8px;font-family:var(--font);font-size:.88rem;color:var(--navy-800);outline:none;transition:border-color .15s}
+.modal-input:focus,.modal-select:focus,.modal-textarea:focus{border-color:var(--navy-500);box-shadow:0 0 0 3px rgba(42,77,118,.12)}
+.modal-textarea{resize:vertical;min-height:68px}
+.modal-2col{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.modal-status{font-size:.82rem;font-weight:600;margin-top:10px}
+.modal-status.error{color:var(--danger-600)}
+.modal-status.success{color:var(--success-600)}
+
+/* ── FUNC INFO CARD (no modal) ── */
+.func-info-card{background:var(--gray-50);border:1px solid var(--gray-200);border-radius:8px;padding:12px 14px;margin-bottom:14px}
+.func-info-row{display:flex;flex-wrap:wrap;gap:16px}
+.func-info-item{display:flex;flex-direction:column;gap:2px}
+.func-info-label{font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--gray-400)}
+.func-info-value{font-size:.88rem;font-weight:600;color:var(--navy-800)}
+
+/* ── PERÍODOS LISTA (no modal) ── */
+.periodos-section{margin-bottom:16px}
+.periodos-title{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--gray-400);margin-bottom:8px}
+.periodo-row{display:flex;align-items:center;gap:10px;padding:8px 10px;border:1px solid var(--gray-200);border-radius:8px;margin-bottom:6px;background:var(--white);font-size:.83rem}
+.periodo-dates{font-weight:600;color:var(--navy-800);flex:1}
+.periodo-dias{background:var(--navy-50);color:var(--navy-600);border-radius:6px;padding:2px 8px;font-size:.78rem;font-weight:700;white-space:nowrap}
+.periodo-tipo{color:var(--gray-500);font-size:.76rem}
+.periodo-reg{color:var(--gray-400);font-size:.72rem}
+.no-periodos{color:var(--gray-400);font-size:.84rem;font-style:italic;padding:8px 0}
+
+/* ── FORM ADD PERIODO ── */
+.add-periodo-section{border-top:1px solid var(--gray-200);padding-top:14px;margin-top:6px}
+.add-periodo-title{font-size:.78rem;font-weight:700;color:var(--navy-700);margin-bottom:12px;display:flex;align-items:center;gap:6px}
+
+/* ── EMPTY STATE ── */
+.empty-state{text-align:center;padding:52px 24px;color:var(--gray-400);font-size:.88rem;font-style:italic}
+
+/* ── STATUS MSG ── */
+.status-msg{font-size:.84rem;font-weight:600;padding:8px 16px;border-radius:8px;display:none}
+.status-msg.success{background:var(--success-100);color:var(--success-600);display:block}
+.status-msg.error  {background:var(--danger-100);color:var(--danger-600);display:block}
+.status-msg.saving {background:var(--navy-50);color:var(--navy-600);display:block}
+
+/* ── FOOTER ── */
+.app-footer{padding:18px 32px;display:flex;align-items:center;justify-content:flex-end}
+
+@media(max-width:900px){
+  .app-header{padding:12px 16px}
+  .app-body,.app-footer{padding-left:16px;padding-right:16px}
+  .modal-2col{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<div id="screenLoading" class="overlay">
+  <div class="spinner"></div>
+  <p>Carregando...</p>
+</div>
+
+<div id="screenError" class="overlay" style="display:none">
+  <div class="error-txt" id="errorMsg"></div>
+</div>
+
+<div id="screenMain">
+
+  <header class="app-header">
+    <div class="header-brand">
+      <div class="header-brand-icon">🏖️</div>
+      <div>
+        <h1>Controle de Férias</h1>
+        <p>BRASAS BI</p>
+      </div>
+    </div>
+    <div class="header-right">
+      <a id="hubBackBtn" class="hub-back-btn" href="#" target="_top">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M10 3L5 8l5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Hub
+      </a>
+      <div class="user-badge">
+        <div>
+          <div class="user-badge-name" id="hNome">—</div>
+          <div class="user-badge-role" id="hRole">—</div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="app-body">
+
+    <!-- Alert cards -->
+    <div class="alert-grid" id="alertGrid"></div>
+
+    <!-- Filter bar -->
+    <div class="filter-card">
+      <div class="filter-row">
+        <div class="filter-group">
+          <label class="selector-label">Empresa</label>
+          <select id="filterEmpresa" class="emp-dropdown" onchange="applyFilters()">
+            <option value="">Todas as empresas</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label class="selector-label">Status</label>
+          <select id="filterStatus" class="emp-dropdown" onchange="applyFilters()">
+            <option value="">Todos os status</option>
+            <option value="vencido">Vencido</option>
+            <option value="critico">Crítico (≤30 dias)</option>
+            <option value="atencao">Atenção (≤60 dias)</option>
+            <option value="ok">OK</option>
+            <option value="gozadas">Férias gozadas</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label class="selector-label">Buscar</label>
+          <input type="text" id="filterSearch" class="search-input" placeholder="Nome do funcionário..." oninput="applyFilters()">
+        </div>
+        <div class="filter-actions">
+          <button class="export-csv-btn" onclick="exportCSV()">&#8681; Exportar CSV</button>
+          <button class="clear-filters-btn" onclick="clearFilters()">Limpar filtros</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Table -->
+    <div class="table-card">
+      <div class="table-card-header">
+        <div>
+          <div class="table-card-title">Funcionários</div>
+          <div class="table-card-sub">Ordenado por urgência: vencidos → críticos → atenção → ok → gozadas</div>
+        </div>
+        <span class="records-pill" id="recordsPill">0 registros</span>
+      </div>
+      <div class="table-wrap">
+        <table class="main-table">
+          <thead>
+            <tr>
+              <th>Funcionário</th>
+              <th>Empresa</th>
+              <th>Vencimento</th>
+              <th>Limite para Gozar</th>
+              <th>Dias p/ Limite</th>
+              <th>Direito</th>
+              <th>Gozado</th>
+              <th>Restante</th>
+              <th>Progresso</th>
+              <th>Status</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="tableBody"></tbody>
+        </table>
+      </div>
+      <div id="emptyState" class="empty-state" style="display:none">
+        Nenhum funcionário com os filtros atuais.
+      </div>
+    </div>
+
+  </div>
+
+  <footer class="app-footer">
+    <span id="statusMsg" class="status-msg"></span>
+  </footer>
+
+</div><!-- /screenMain -->
+
+<!-- ── Modal: registrar / ver períodos de férias ── -->
+<div id="ferModal" class="modal-backdrop">
+  <div class="modal-card">
+    <div class="modal-header">
+      <div class="modal-title" id="modalTitle">Registrar Férias</div>
+      <div class="modal-sub" id="modalSub"></div>
+    </div>
+    <div class="modal-body">
+
+      <!-- Info do funcionário -->
+      <div class="func-info-card" id="modalFuncInfo"></div>
+
+      <!-- Períodos já registrados -->
+      <div class="periodos-section">
+        <div class="periodos-title">Períodos Registrados</div>
+        <div id="modalPeriodos"></div>
+      </div>
+
+      <!-- Form novo período -->
+      <div class="add-periodo-section" id="addPeriodoSection">
+        <div class="add-periodo-title">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          Adicionar período de férias
+        </div>
+
+        <div class="modal-2col">
+          <div>
+            <label class="modal-label" for="modalInicio">Início das Férias</label>
+            <input type="date" id="modalInicio" class="modal-input" oninput="autoCalcDias()">
+          </div>
+          <div>
+            <label class="modal-label" for="modalFim">Fim das Férias (opcional)</label>
+            <input type="date" id="modalFim" class="modal-input" oninput="autoCalcDias()">
+          </div>
+        </div>
+
+        <div class="modal-2col">
+          <div>
+            <label class="modal-label" for="modalDias">Dias Gozados</label>
+            <input type="number" id="modalDias" class="modal-input" min="1" max="90" placeholder="Ex: 30">
+          </div>
+          <div>
+            <label class="modal-label" for="modalTipo">Tipo</label>
+            <select id="modalTipo" class="modal-select">
+              <option value="Férias">Férias</option>
+              <option value="Abono Pecuniário">Abono Pecuniário</option>
+              <option value="Férias Antecipadas">Férias Antecipadas</option>
+            </select>
+          </div>
+        </div>
+
+        <label class="modal-label" for="modalObs">Observação (opcional)</label>
+        <textarea id="modalObs" class="modal-textarea" placeholder="Ex: primeira parcela, vendeu 10 dias..."></textarea>
+
+        <div id="modalFormStatus" class="modal-status"></div>
+      </div>
+
+    </div>
+    <div class="modal-footer">
+      <button class="btn-ghost" onclick="fecharModal()">Fechar</button>
+      <button id="modalSaveBtn" class="save-btn" onclick="salvarPeriodo()">Salvar Período</button>
+    </div>
+  </div>
+</div>
+
+<script>
+var TOKEN   = '<?= token ?>';
+var HUB_URL = 'https://script.google.com/a/macros/brasas.com/s/AKfycbyF7BArYMYFtcQY7_4RTGGPw89yNohAjR7eGptItP-EsnWhNfiZR2ISRaHdAkwlLSlr/exec';
+document.getElementById('hubBackBtn').href = HUB_URL;
+
+var state = {
+  user: null,
+  data: null,    // { records, empresas, isDP }
+  filtered: [],
+  activeChave: null
+};
+
+// ── STATUS CONFIG ──────────────────────────────────────────────────────
+
+var STATUS_CFG = {
+  vencido: { label:'Vencido',      pillCls:'pill-vencido', rowCls:'row-vencido', icon:'🔴' },
+  critico: { label:'Crítico',      pillCls:'pill-critico', rowCls:'row-critico', icon:'🟠' },
+  atencao: { label:'Atenção',      pillCls:'pill-atencao', rowCls:'row-atencao', icon:'🟡' },
+  ok:      { label:'OK',           pillCls:'pill-ok',      rowCls:'row-ok',      icon:'🟢' },
+  gozadas: { label:'Gozadas',      pillCls:'pill-gozadas', rowCls:'row-gozadas', icon:'✅' }
+};
+
+// ── INIT ────────────────────────────────────────────────────────────────
+
+window.onload = function() {
+  if (!TOKEN) { window.top.location.href = HUB_URL; return; }
+  show('screenLoading');
+  google.script.run
+    .withSuccessHandler(function(user) {
+      state.user = user;
+      google.script.run
+        .withSuccessHandler(onDataLoaded)
+        .withFailureHandler(showError)
+        .getVencimentosData(TOKEN);
+    })
+    .withFailureHandler(showError)
+    .getUserFromHub(TOKEN);
+};
+
+function onDataLoaded(data) {
+  state.data = data;
+  renderUI();
+}
+
+// ── RENDER ──────────────────────────────────────────────────────────────
+
+function renderUI() {
+  var u = state.user;
+  document.getElementById('hNome').textContent = u.nome;
+  document.getElementById('hRole').textContent = u.role === 'admin' || u.role === 'dp' ? 'DP / Admin' : 'Visualizador';
+
+  renderEmpresaFilter();
+  applyFilters();
+
+  hideAll();
+  document.getElementById('screenMain').style.display = 'flex';
+}
+
+function renderEmpresaFilter() {
+  var sel = document.getElementById('filterEmpresa');
+  var current = sel.value;
+  sel.innerHTML = '<option value="">Todas as empresas</option>' +
+    state.data.empresas.map(function(e) {
+      return '<option value="' + esc(e) + '"' + (e === current ? ' selected' : '') + '>' + esc(e) + '</option>';
+    }).join('');
+}
+
+function applyFilters() {
+  var empF    = document.getElementById('filterEmpresa').value;
+  var stF     = document.getElementById('filterStatus').value;
+  var search  = norm(document.getElementById('filterSearch').value);
+
+  state.filtered = state.data.records.filter(function(r) {
+    if (empF   && norm(r.empresa) !== norm(empF)) return false;
+    if (stF    && r.status !== stF)               return false;
+    if (search && norm(r.nome).indexOf(search) === -1 && norm(r.empresa).indexOf(search) === -1) return false;
+    return true;
+  });
+
+  renderAlertCards();
+  renderTable();
+}
+
+function renderAlertCards() {
+  var all = state.data.records;
+  var counts = { vencido:0, critico:0, atencao:0, ok:0, gozadas:0 };
+  all.forEach(function(r) { counts[r.status]++; });
+
+  var cards = [
+    { key:'total',   icon:'👥', value: all.length,        label:'Total' },
+    { key:'vencido', icon:'🔴', value: counts.vencido,    label:'Vencidas' },
+    { key:'critico', icon:'🟠', value: counts.critico,    label:'Críticas (≤30d)' },
+    { key:'atencao', icon:'🟡', value: counts.atencao,    label:'Atenção (≤60d)' },
+    { key:'ok',      icon:'🟢', value: counts.ok,         label:'OK' },
+    { key:'gozadas', icon:'✅', value: counts.gozadas,    label:'Gozadas' }
+  ];
+
+  document.getElementById('alertGrid').innerHTML = cards.map(function(c) {
+    return '<div class="alert-card ' + c.key + '">' +
+      '<div class="alert-icon">' + c.icon + '</div>' +
+      '<div><div class="alert-value">' + c.value + '</div><div class="alert-label">' + c.label + '</div></div>' +
+      '</div>';
+  }).join('');
+}
+
+function renderTable() {
+  var rows = state.filtered;
+  var body = document.getElementById('tableBody');
+  var empty = document.getElementById('emptyState');
+  document.getElementById('recordsPill').textContent = rows.length + (rows.length === 1 ? ' registro' : ' registros');
+
+  if (!rows.length) {
+    body.innerHTML = '';
+    empty.style.display = '';
+    return;
+  }
+  empty.style.display = 'none';
+
+  body.innerHTML = rows.map(function(r) {
+    var cfg     = STATUS_CFG[r.status];
+    var pct     = r.diasDireito > 0 ? Math.min(100, Math.round(r.diasGozados / r.diasDireito * 100)) : 0;
+    var fillCls = r.status === 'gozadas' ? 'fill-full' : (r.status === 'vencido' ? 'fill-venc' : (pct > 0 ? 'fill-part' : 'fill-none'));
+
+    var diffTxt;
+    if (r.status === 'gozadas') {
+      diffTxt = '<span class="diff-badge gozadas">—</span>';
+    } else if (r.diffDias < 0) {
+      diffTxt = '<span class="diff-badge vencido">' + Math.abs(r.diffDias) + 'd atraso</span>';
+    } else {
+      var cls = r.status === 'ok' ? 'ok' : r.status;
+      diffTxt = '<span class="diff-badge ' + cls + '">' + r.diffDias + ' dias</span>';
+    }
+
+    var btnHtml = state.data.isDP
+      ? '<button class="reg-btn" onclick="abrirModal(\'' + esc(r.chave) + '\')">Registrar</button>'
+      : '<button class="reg-btn" onclick="abrirModal(\'' + esc(r.chave) + '\')">Ver períodos</button>';
+
+    return '<tr class="' + cfg.rowCls + '">' +
+      '<td style="font-weight:600">' + esc(r.nome) + '</td>' +
+      '<td>' + esc(r.empresa) + '</td>' +
+      '<td>' + esc(r.vencimento) + '</td>' +
+      '<td style="font-weight:600">' + esc(r.limite) + '</td>' +
+      '<td>' + diffTxt + '</td>' +
+      '<td>' + r.diasDireito + ' dias</td>' +
+      '<td>' + r.diasGozados + ' dias</td>' +
+      '<td style="font-weight:600;color:' + (r.diasRestantes === 0 ? 'var(--success-600)' : (r.status === 'vencido' ? 'var(--danger-600)' : 'var(--navy-800)')) + '">' + r.diasRestantes + ' dias</td>' +
+      '<td><div class="dias-bar-wrap"><div class="dias-bar-bg"><div class="dias-bar-fill ' + fillCls + '" style="width:' + pct + '%"></div></div><span style="font-size:.72rem;color:var(--gray-500);white-space:nowrap">' + pct + '%</span></div></td>' +
+      '<td><span class="status-pill ' + cfg.pillCls + '">' + cfg.label + '</span></td>' +
+      '<td>' + btnHtml + '</td>' +
+      '</tr>';
+  }).join('');
+}
+
+// ── MODAL ────────────────────────────────────────────────────────────────
+
+function abrirModal(chave) {
+  state.activeChave = chave;
+  var rec = findRecord(chave);
+  if (!rec) return;
+
+  document.getElementById('modalTitle').textContent = rec.nome;
+  document.getElementById('modalSub').textContent   = rec.empresa;
+
+  // Info card
+  document.getElementById('modalFuncInfo').innerHTML =
+    '<div class="func-info-row">' +
+      infoItem('Vencimento', rec.vencimento) +
+      infoItem('Limite para Gozar', '<strong style="color:' + limitColor(rec) + '">' + rec.limite + '</strong>') +
+      infoItem('Direito', rec.diasDireito + ' dias') +
+      infoItem('Gozado', rec.diasGozados + ' dias') +
+      infoItem('Restante', '<strong>' + rec.diasRestantes + ' dias</strong>') +
+    '</div>';
+
+  renderModalPeriodos(rec);
+
+  // Mostrar/esconder form de adição
+  document.getElementById('addPeriodoSection').style.display = state.data.isDP ? '' : 'none';
+  document.getElementById('modalSaveBtn').style.display      = state.data.isDP ? '' : 'none';
+
+  // Reset form
+  document.getElementById('modalInicio').value = '';
+  document.getElementById('modalFim').value    = '';
+  document.getElementById('modalDias').value   = '';
+  document.getElementById('modalTipo').value   = 'Férias';
+  document.getElementById('modalObs').value    = '';
+  document.getElementById('modalFormStatus').textContent = '';
+  document.getElementById('modalFormStatus').className   = 'modal-status';
+
+  document.getElementById('ferModal').classList.add('open');
+}
+
+function infoItem(label, value) {
+  return '<div class="func-info-item"><div class="func-info-label">' + label + '</div><div class="func-info-value">' + value + '</div></div>';
+}
+
+function limitColor(rec) {
+  if (rec.status === 'vencido') return 'var(--danger-600)';
+  if (rec.status === 'critico') return 'var(--orange-600)';
+  if (rec.status === 'atencao') return '#ca8a04';
+  return 'var(--navy-800)';
+}
+
+function renderModalPeriodos(rec) {
+  var wrap = document.getElementById('modalPeriodos');
+  if (!rec.periodos || !rec.periodos.length) {
+    wrap.innerHTML = '<div class="no-periodos">Nenhum período registrado ainda.</div>';
+    return;
+  }
+  wrap.innerHTML = rec.periodos.map(function(p) {
+    var dates = p.inicio + (p.fim ? ' → ' + p.fim : '');
+    var del = state.data.isDP
+      ? '<button class="del-period-btn" title="Excluir período" onclick="deletarPeriodo(\'' + esc(p.id) + '\')">🗑</button>'
+      : '';
+    return '<div class="periodo-row">' +
+      '<div style="flex:1">' +
+        '<div class="periodo-dates">' + dates + '</div>' +
+        '<div style="display:flex;gap:8px;margin-top:3px;align-items:center">' +
+          '<span class="periodo-tipo">' + esc(p.tipo) + '</span>' +
+          (p.obs ? '<span class="periodo-reg">' + esc(p.obs) + '</span>' : '') +
+        '</div>' +
+        '<div class="periodo-reg">Registrado por ' + esc(p.regPor) + (p.regEm ? ' em ' + p.regEm : '') + '</div>' +
+      '</div>' +
+      '<span class="periodo-dias">' + p.dias + ' dias</span>' +
+      del +
+      '</div>';
+  }).join('');
+}
+
+function fecharModal() {
+  document.getElementById('ferModal').classList.remove('open');
+  state.activeChave = null;
+}
+
+// ── AUTO-CALC DIAS ────────────────────────────────────────────────────────
+
+function autoCalcDias() {
+  var ini = document.getElementById('modalInicio').value;
+  var fim = document.getElementById('modalFim').value;
+  if (!ini || !fim) return;
+  var dIni = new Date(ini + 'T00:00:00');
+  var dFim = new Date(fim + 'T00:00:00');
+  var diff = Math.round((dFim - dIni) / 86400000);
+  if (diff > 0) document.getElementById('modalDias').value = diff;
+}
+
+// ── SALVAR PERÍODO ────────────────────────────────────────────────────────
+
+function salvarPeriodo() {
+  var chave  = state.activeChave;
+  var inicio = document.getElementById('modalInicio').value;
+  var fim    = document.getElementById('modalFim').value;
+  var dias   = document.getElementById('modalDias').value;
+  var tipo   = document.getElementById('modalTipo').value;
+  var obs    = document.getElementById('modalObs').value.trim();
+
+  if (!inicio) { setModalStatus('Informe a data de início.', 'error'); return; }
+  if (!dias || Number(dias) <= 0) { setModalStatus('Informe os dias (deve ser maior que zero).', 'error'); return; }
+
+  // Converte para DD/MM/YYYY para enviar ao backend
+  function toDisplay(v) {
+    if (!v) return '';
+    var p = v.split('-');
+    return p.length === 3 ? p[2] + '/' + p[1] + '/' + p[0] : v;
+  }
+
+  setModalStatus('Salvando...', 'saving');
+  document.getElementById('modalSaveBtn').disabled = true;
+
+  google.script.run
+    .withSuccessHandler(function(data) {
+      document.getElementById('modalSaveBtn').disabled = false;
+      state.data = data;
+      applyFilters();
+      var rec = findRecord(chave);
+      if (rec) renderModalPeriodos(rec);
+      // Atualiza info card
+      if (rec) {
+        document.getElementById('modalFuncInfo').innerHTML =
+          '<div class="func-info-row">' +
+            infoItem('Vencimento', rec.vencimento) +
+            infoItem('Limite para Gozar', '<strong style="color:' + limitColor(rec) + '">' + rec.limite + '</strong>') +
+            infoItem('Direito', rec.diasDireito + ' dias') +
+            infoItem('Gozado', rec.diasGozados + ' dias') +
+            infoItem('Restante', '<strong>' + rec.diasRestantes + ' dias</strong>') +
+          '</div>';
+      }
+      // Reset form
+      document.getElementById('modalInicio').value = '';
+      document.getElementById('modalFim').value    = '';
+      document.getElementById('modalDias').value   = '';
+      document.getElementById('modalObs').value    = '';
+      setModalStatus('Período salvo com sucesso!', 'success');
+      setStatus('Período de férias registrado.', 'success');
+    })
+    .withFailureHandler(function(err) {
+      document.getElementById('modalSaveBtn').disabled = false;
+      setModalStatus('Erro: ' + (err.message || err), 'error');
+    })
+    .saveFeriasEntry(TOKEN, {
+      chave:  chave,
+      inicio: toDisplay(inicio),
+      fim:    toDisplay(fim),
+      dias:   Number(dias),
+      tipo:   tipo,
+      obs:    obs
+    });
+}
+
+// ── DELETAR PERÍODO ────────────────────────────────────────────────────────
+
+function deletarPeriodo(id) {
+  if (!confirm('Excluir este período de férias?')) return;
+  var chave = state.activeChave;
+
+  google.script.run
+    .withSuccessHandler(function(data) {
+      state.data = data;
+      applyFilters();
+      var rec = findRecord(chave);
+      if (rec) renderModalPeriodos(rec);
+      setModalStatus('Período excluído.', 'success');
+      setStatus('Período excluído.', 'success');
+    })
+    .withFailureHandler(function(err) {
+      setModalStatus('Erro: ' + (err.message || err), 'error');
+    })
+    .deleteFeriasEntry(TOKEN, { id: id });
+}
+
+// ── FILTROS ────────────────────────────────────────────────────────────────
+
+function clearFilters() {
+  document.getElementById('filterEmpresa').value = '';
+  document.getElementById('filterStatus').value  = '';
+  document.getElementById('filterSearch').value  = '';
+  applyFilters();
+}
+
+// ── EXPORTAR CSV ────────────────────────────────────────────────────────────
+
+function csvEscape(val) {
+  var s = String(val == null ? '' : val);
+  if (/[",\n\r;]/.test(s)) s = '"' + s.replace(/"/g, '""') + '"';
+  return s;
+}
+
+function exportCSV() {
+  var rows = state.filtered;
+  if (!rows.length) { alert('Nenhum registro para exportar.'); return; }
+  var STATUS_LABEL = { vencido:'Vencido', critico:'Crítico', atencao:'Atenção', ok:'OK', gozadas:'Gozadas' };
+  var header = ['Funcionário','Empresa','Vencimento','Limite para Gozar','Dias Restantes até Limite','Direito (dias)','Gozado (dias)','Restante (dias)','Status'];
+  var lines  = ['﻿' + header.map(csvEscape).join(',')];
+  rows.forEach(function(r) {
+    lines.push([r.nome, r.empresa, r.vencimento, r.limite, r.diffDias, r.diasDireito, r.diasGozados, r.diasRestantes, STATUS_LABEL[r.status]||r.status].map(csvEscape).join(','));
+  });
+  var blob = new Blob([lines.join('\r\n')], {type:'text/csv;charset=utf-8;'});
+  var url  = URL.createObjectURL(blob);
+  var a    = document.createElement('a');
+  a.href = url; a.download = 'controle_ferias_' + new Date().toISOString().slice(0,10) + '.csv';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
+}
+
+// ── UTILS ────────────────────────────────────────────────────────────────
+
+function norm(s) {
+  return String(s || '').trim().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+}
+
+function esc(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function findRecord(chave) {
+  if (!state.data) return null;
+  for (var i = 0; i < state.data.records.length; i++) {
+    if (state.data.records[i].chave === chave) return state.data.records[i];
+  }
+  return null;
+}
+
+function setStatus(msg, type) {
+  var el = document.getElementById('statusMsg');
+  el.textContent = msg;
+  el.className   = 'status-msg ' + type;
+  setTimeout(function() { el.className = 'status-msg'; }, 4000);
+}
+
+function setModalStatus(msg, type) {
+  var el = document.getElementById('modalFormStatus');
+  el.textContent = msg;
+  el.className   = 'modal-status ' + type;
+}
+
+function show(id) {
+  hideAll();
+  var el = document.getElementById(id);
+  if (el) el.style.display = (id === 'screenMain') ? 'flex' : '';
+}
+
+function hideAll() {
+  ['screenLoading','screenError','screenMain'].forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el) el.style.display = 'none';
+  });
+}
+
+function showError(err) {
+  show('screenError');
+  document.getElementById('errorMsg').textContent = (err && err.message) ? err.message : String(err);
+}
+
+// Fecha modal ao clicar fora
+document.getElementById('ferModal').addEventListener('click', function(e) {
+  if (e.target === this) fecharModal();
+});
+</script>
+</body>
+</html>

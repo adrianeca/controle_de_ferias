@@ -1,0 +1,5 @@
+# Arquivos temporários da extração do XLS
+*.xls
+*.csv
+*.ps1
+rows_js.txt
