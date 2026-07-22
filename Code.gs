@@ -16,6 +16,41 @@ const EMAILS_ADM = [
 const ALERTA_CRITICO = 30;
 const ALERTA_ATENCAO = 60;
 
+// Mapa sigla (coluna E da SESSOES) → nome normalizado da empresa (coluna EMPRESA do VENCIMENTOS)
+// Siglas com múltiplos códigos (ex: MRI/MR, NS/CH) aparecem como entradas separadas apontando para a mesma empresa
+const UNIDADES_MAP = {
+  'editora': 'editora eficiencia ltda',
+  'nl':      'bal - barra assessoria linguistica ltda',
+  'bg':      'bg assessoria linguistica ltda',
+  'ig':      'cambauba assessoria linguistica ltda.',
+  'cx':      'caxias assessoria linguistica ltda.',
+  'cg':      'cg assessoria linguistica ltda',
+  'dt':      'dt assessoria linguistica ltda.',
+  'ec new':  'ec new assessoria linguistica ltda',
+  'fg':      'fg assessoria linguistica ltda',
+  'it':      'it assessoria linguistica ltda.',
+  'bf':      'kansas assessoria linguistica ltda.',
+  'vq':      'lexicon assessoria linguistica ltda',
+  'lj':      'lj assessoria linguistica ltda',
+  'metodos': 'metodos de ensino brasas ltda',
+  'mri':     'mri assessoria linguistica ltda',
+  'mr':      'mri assessoria linguistica ltda',
+  'ip':      'new concepts assessoria linguistica ltda',
+  'ni':      'ni assessoria linguistica ltda.',
+  'ns':      'ns assessoria linguistica ltda',
+  'ch':      'ns assessoria linguistica ltda',
+  'nt':      'nt assessoria linguistica ltda.',
+  'po':      'p.o. assessoria linguistica ltda',
+  'rc':      'rc assessoria linguistica ltda',
+  'cp':      'the west coast school of english ltda',
+  'tj':      'tj assessoria linguistica ltda.',
+  'tq':      'tq assessoria linguistica ltda',
+  'vp':      'vp assessoria linguistica ltda',
+  'pn':      'pn assessoria linguistica ltda',
+  'bod':     'brasas on demand assessoria linguistica',
+  'ez':      'eleonora toscano de britto zinovetz'
+};
+
 // Colunas da aba VENCIMENTOS (base 0)
 const VEN = { NOME: 0, EMPRESA: 1, CARGO: 2, ADMISSAO: 3, VENCIMENTO: 4, DIAS_DIREITO: 5, ATIVO: 6 };
 
@@ -108,10 +143,13 @@ function getSessionUser_(token) {
     const acessos = String(row[7] || '').toLowerCase().split(',').map(a => a.trim());
     if (!acessos.includes(MEU_ACESSO))
       throw new Error('Você não tem permissão para acessar o Controle de Férias.');
+    const unidadesRaw = String(row[4] || '').trim();
+    const unidades = unidadesRaw ? unidadesRaw.split(',').map(u => norm_(u)).filter(Boolean) : [];
     return {
       email,
       nome: String(row[2] || '').trim(),
-      role: String(row[3] || '').trim().toLowerCase()
+      role: String(row[3] || '').trim().toLowerCase(),
+      unidades  // vazio = acesso a todas; preenchido = só essas unidades
     };
   } catch (e) {
     if (e.message && e.message.includes('permissão')) throw e;
@@ -200,6 +238,10 @@ function getVencimentosData(token) {
     if (atv === 'inativo' || atv === 'false' || atv === 'não' || atv === 'nao' || atv === '0') continue;
 
     const empresa  = String(r[VEN.EMPRESA]   || '').trim();
+    if (user.unidades.length > 0) {
+      const normEmp = norm_(empresa);
+      if (!user.unidades.some(u => (UNIDADES_MAP[u] || u) === normEmp)) continue;
+    }
     const cargo    = String(r[VEN.CARGO]     || '').trim();
     const admissao = r[VEN.ADMISSAO] ? fmtData_(r[VEN.ADMISSAO] instanceof Date ? r[VEN.ADMISSAO] : parseDate_(String(r[VEN.ADMISSAO]))) : '';
     const venRaw   = r[VEN.VENCIMENTO];
@@ -208,8 +250,9 @@ function getVencimentosData(token) {
     const vencDate = venRaw instanceof Date ? new Date(venRaw.getTime()) : parseDate_(String(venRaw));
     if (!vencDate || isNaN(vencDate)) continue;
 
-    const diasDir  = Number(r[VEN.DIAS_DIREITO]) || 30;
-    const limite   = calcLimite_(vencDate);
+    const diasDirRaw = r[VEN.DIAS_DIREITO];
+    const diasDir  = diasDirRaw instanceof Date ? 30 : (Number(diasDirRaw) || 30);
+    const limite   = vencDate;
     const chave    = makeChave_(nome, empresa, vencDate);
     const periodos = (fMap[chave] || []).slice().sort((a, b) => {
       const da = parseDate_(a.inicio), db = parseDate_(b.inicio);

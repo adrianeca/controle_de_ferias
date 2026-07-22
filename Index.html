@@ -284,7 +284,6 @@ body{font-family:var(--font);background:var(--gray-100);color:var(--navy-800);mi
               <th>Funcionário</th>
               <th>Empresa</th>
               <th>Admissão</th>
-              <th>Vencimento</th>
               <th>Limite para Gozar</th>
               <th>Dias p/ Limite</th>
               <th>Direito</th>
@@ -520,7 +519,6 @@ function renderTable() {
       '<td>' + nomeCell + '</td>' +
       '<td>' + esc(r.empresa) + '</td>' +
       '<td style="white-space:nowrap">' + esc(r.admissao || '') + '</td>' +
-      '<td>' + esc(r.vencimento) + '</td>' +
       '<td style="font-weight:600">' + esc(r.limite) + '</td>' +
       '<td>' + diffTxt + '</td>' +
       '<td>' + r.diasDireito + ' dias</td>' +
@@ -548,7 +546,6 @@ function abrirModal(chave) {
     '<div class="func-info-row">' +
       (rec.cargo    ? infoItem('Cargo',             esc(rec.cargo))    : '') +
       (rec.admissao ? infoItem('Admissão',          esc(rec.admissao)) : '') +
-      infoItem('Vencimento', rec.vencimento) +
       infoItem('Limite para Gozar', '<strong style="color:' + limitColor(rec) + '">' + rec.limite + '</strong>') +
       infoItem('Direito', rec.diasDireito + ' dias') +
       infoItem('Gozado', rec.diasGozados + ' dias') +
@@ -663,7 +660,6 @@ function salvarPeriodo() {
           '<div class="func-info-row">' +
             (rec.cargo    ? infoItem('Cargo',         esc(rec.cargo))    : '') +
             (rec.admissao ? infoItem('Admissão',      esc(rec.admissao)) : '') +
-            infoItem('Vencimento', rec.vencimento) +
             infoItem('Limite para Gozar', '<strong style="color:' + limitColor(rec) + '">' + rec.limite + '</strong>') +
             infoItem('Direito', rec.diasDireito + ' dias') +
             infoItem('Gozado', rec.diasGozados + ' dias') +
