@@ -101,6 +101,12 @@ function calcLimite_(vencDate) {
   return d;
 }
 
+// Instrutores não entram no controle de férias.
+// Aceita a grafia "INTRUTOR", que aparece com erro de digitação na folha de origem.
+function isInstrutor_(cargo) {
+  return /^ins?trutor\b/.test(norm_(cargo));
+}
+
 // Chave estável que identifica uma linha na aba VENCIMENTOS
 function makeChave_(nome, empresa, vencDate) {
   const v = Utilities.formatDate(
@@ -243,6 +249,8 @@ function getVencimentosData(token) {
       if (!user.unidades.some(u => (UNIDADES_MAP[u] || u) === normEmp)) continue;
     }
     const cargo    = String(r[VEN.CARGO]     || '').trim();
+    if (isInstrutor_(cargo)) continue;
+
     const admissao = r[VEN.ADMISSAO] ? fmtData_(r[VEN.ADMISSAO] instanceof Date ? r[VEN.ADMISSAO] : parseDate_(String(r[VEN.ADMISSAO]))) : '';
     const venRaw   = r[VEN.VENCIMENTO];
     if (!venRaw) continue;
