@@ -72,6 +72,58 @@ body{font-family:var(--font);background:var(--gray-100);color:var(--navy-800);mi
 .emp-dropdown:focus{border-color:var(--navy-500);box-shadow:0 0 0 3px rgba(42,77,118,.12)}
 .search-input{min-width:220px;padding:9px 12px;border:1.5px solid var(--gray-200);border-radius:8px;font-family:var(--font);font-size:.88rem;color:var(--navy-800);outline:none;transition:border-color .15s}
 .search-input:focus{border-color:var(--navy-500);box-shadow:0 0 0 3px rgba(42,77,118,.12)}
+
+/* ── MULTI-SELECT DE EMPRESAS ── */
+.multi-select{position:relative}
+.ms-btn{min-width:230px;display:flex;align-items:center;gap:8px;padding:9px 12px;border:1.5px solid var(--gray-200);border-radius:8px;background:var(--white);font-family:var(--font);font-size:.88rem;color:var(--navy-800);cursor:pointer;text-align:left;transition:border-color .15s}
+.ms-btn:hover{border-color:var(--navy-300)}
+.ms-btn.has-sel{border-color:var(--navy-500);background:var(--navy-50)}
+.ms-btn-text{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ms-caret{flex-shrink:0;color:var(--gray-400);transition:transform .15s}
+.multi-select.open .ms-caret{transform:rotate(180deg)}
+.ms-panel{display:none;position:absolute;top:calc(100% + 5px);left:0;z-index:300;width:330px;max-width:88vw;background:var(--white);border:1px solid var(--gray-200);border-radius:10px;box-shadow:var(--shadow-md);overflow:hidden}
+.multi-select.open .ms-panel{display:block}
+.ms-panel-top{padding:10px;border-bottom:1px solid var(--gray-200)}
+.ms-search{width:100%;padding:7px 10px;border:1.5px solid var(--gray-200);border-radius:7px;font-family:var(--font);font-size:.84rem;color:var(--navy-800);outline:none}
+.ms-search:focus{border-color:var(--navy-500)}
+.ms-actions{display:flex;gap:14px;margin-top:8px}
+.ms-link{background:none;border:none;padding:0;font-family:var(--font);font-size:.76rem;font-weight:700;color:var(--navy-500);cursor:pointer;text-decoration:underline}
+.ms-link:hover{color:var(--navy-700)}
+.ms-list{max-height:260px;overflow-y:auto;padding:6px}
+.ms-item{display:flex;align-items:center;gap:9px;padding:7px 9px;border-radius:7px;font-size:.84rem;color:var(--navy-800);cursor:pointer}
+.ms-item:hover{background:var(--gray-50)}
+.ms-item input{width:15px;height:15px;accent-color:var(--navy-600);cursor:pointer;flex-shrink:0}
+.ms-item-count{margin-left:auto;font-size:.72rem;font-weight:700;color:var(--gray-400)}
+.ms-none{padding:14px 10px;text-align:center;font-size:.82rem;color:var(--gray-400);font-style:italic}
+
+/* ── DRAWER LATERAL ── */
+.drawer-backdrop{position:fixed;inset:0;z-index:4000;background:rgba(10,22,40,.42);opacity:0;visibility:hidden;transition:opacity .2s,visibility .2s}
+.drawer-backdrop.open{opacity:1;visibility:visible}
+.drawer{position:fixed;top:0;right:0;bottom:0;z-index:4001;width:440px;max-width:100vw;background:var(--white);box-shadow:-6px 0 28px rgba(10,22,40,.18);display:flex;flex-direction:column;transform:translateX(100%);transition:transform .24s ease}
+.drawer.open{transform:translateX(0)}
+.drawer-header{padding:20px 22px 16px;border-bottom:1px solid var(--gray-200);flex-shrink:0}
+.drawer-top{display:flex;align-items:flex-start;gap:12px}
+.drawer-name{font-size:1.05rem;font-weight:700;color:var(--navy-800);line-height:1.3}
+.drawer-cargo{font-size:.8rem;color:var(--gray-500);margin-top:2px}
+.drawer-emp{font-size:.76rem;color:var(--gray-400);margin-top:1px}
+.drawer-close{background:none;border:none;font-size:1.35rem;line-height:1;color:var(--gray-400);cursor:pointer;padding:2px 6px;border-radius:7px;flex-shrink:0;transition:background .15s,color .15s}
+.drawer-close:hover{background:var(--gray-100);color:var(--navy-800)}
+.drawer-body{padding:18px 22px;flex:1;overflow-y:auto}
+.drawer-footer{padding:14px 22px;border-top:1px solid var(--gray-200);display:flex;gap:10px;justify-content:flex-end;flex-shrink:0}
+.drawer-section-title{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--gray-400);margin:20px 0 9px}
+.drawer-section-title:first-child{margin-top:0}
+.drawer-stats{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.drawer-stat{background:var(--gray-50);border:1px solid var(--gray-200);border-radius:9px;padding:9px 12px}
+.drawer-stat-label{font-size:.64rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--gray-400)}
+.drawer-stat-value{font-size:.95rem;font-weight:700;color:var(--navy-800);margin-top:2px}
+.drawer-progress{margin-top:12px}
+.drawer-progress-top{display:flex;justify-content:space-between;font-size:.75rem;color:var(--gray-500);margin-bottom:5px}
+.drawer-total{display:flex;align-items:center;justify-content:space-between;background:var(--navy-50);border-radius:9px;padding:9px 13px;margin-top:10px;font-size:.82rem;font-weight:700;color:var(--navy-700)}
+
+@media(max-width:520px){
+  .drawer{width:100%}
+  .drawer-stats{grid-template-columns:1fr}
+}
 .filter-actions{display:flex;gap:8px;margin-left:auto;align-items:flex-end}
 .clear-filters-btn{background:var(--white);border:1.5px solid var(--gray-200);border-radius:8px;padding:9px 16px;font-family:var(--font);font-size:.85rem;font-weight:600;color:var(--gray-500);cursor:pointer;transition:border-color .15s,color .15s}
 .clear-filters-btn:hover{border-color:var(--navy-300);color:var(--navy-700)}
@@ -99,6 +151,8 @@ body{font-family:var(--font);background:var(--gray-100);color:var(--navy-800);mi
 .main-table tbody tr.row-atencao td:first-child{border-left:3px solid var(--warning-500)}
 .main-table tbody tr.row-ok     td:first-child{border-left:3px solid var(--success-500)}
 .main-table tbody tr.row-gozadas td:first-child{border-left:3px solid var(--gray-300)}
+.name-link{background:none;border:none;padding:0;font-family:var(--font);font-size:.83rem;font-weight:600;color:var(--navy-700);cursor:pointer;text-align:left;border-bottom:1px dashed var(--navy-200);transition:color .15s,border-color .15s}
+.name-link:hover{color:var(--navy-500);border-bottom-color:var(--navy-500)}
 
 /* ── STATUS PILLS ── */
 .status-pill{display:inline-block;padding:3px 10px;border-radius:999px;font-size:.72rem;font-weight:700;white-space:nowrap}
@@ -242,9 +296,22 @@ body{font-family:var(--font);background:var(--gray-100);color:var(--navy-800);mi
       <div class="filter-row">
         <div class="filter-group">
           <label class="selector-label">Empresa</label>
-          <select id="filterEmpresa" class="emp-dropdown" onchange="applyFilters()">
-            <option value="">Todas as empresas</option>
-          </select>
+          <div class="multi-select" id="empMulti">
+            <button type="button" class="ms-btn" id="empMultiBtn" onclick="toggleEmpPanel(event)" aria-haspopup="true" aria-expanded="false">
+              <span class="ms-btn-text" id="empMultiLabel">Todas as empresas</span>
+              <svg class="ms-caret" width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M2 4.5L6 8.5L10 4.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+            <div class="ms-panel">
+              <div class="ms-panel-top">
+                <input type="text" id="empMultiSearch" class="ms-search" placeholder="Filtrar empresas..." oninput="renderEmpresaOptions()">
+                <div class="ms-actions">
+                  <button type="button" class="ms-link" onclick="selecionarEmpresas('all')">Selecionar todas</button>
+                  <button type="button" class="ms-link" onclick="selecionarEmpresas('none')">Limpar seleção</button>
+                </div>
+              </div>
+              <div class="ms-list" id="empMultiList"></div>
+            </div>
+          </div>
         </div>
         <div class="filter-group">
           <label class="selector-label">Status</label>
@@ -309,6 +376,26 @@ body{font-family:var(--font);background:var(--gray-100);color:var(--navy-800);mi
   </footer>
 
 </div><!-- /screenMain -->
+
+<!-- ── Drawer lateral: histórico de férias do funcionário ── -->
+<div id="drawerBackdrop" class="drawer-backdrop" onclick="fecharDrawer()"></div>
+<aside id="ferDrawer" class="drawer" role="dialog" aria-modal="true" aria-labelledby="drawerName">
+  <div class="drawer-header">
+    <div class="drawer-top">
+      <div style="flex:1;min-width:0">
+        <div class="drawer-name" id="drawerName">—</div>
+        <div class="drawer-cargo" id="drawerCargo"></div>
+        <div class="drawer-emp" id="drawerEmp"></div>
+      </div>
+      <button class="drawer-close" onclick="fecharDrawer()" aria-label="Fechar">&times;</button>
+    </div>
+  </div>
+  <div class="drawer-body" id="drawerBody"></div>
+  <div class="drawer-footer">
+    <button class="btn-ghost" onclick="fecharDrawer()">Fechar</button>
+    <button id="drawerRegBtn" class="save-btn" onclick="registrarPeloDrawer()">Registrar período</button>
+  </div>
+</aside>
 
 <!-- ── Modal: registrar / ver períodos de férias ── -->
 <div id="ferModal" class="modal-backdrop">
@@ -382,9 +469,12 @@ document.getElementById('hubBackBtn').href = HUB_URL;
 
 var state = {
   user: null,
-  data: null,    // { records, empresas, isDP }
-  filtered: [],
-  activeChave: null
+  data: null,        // { records, empresas, isDP }
+  base: [],          // filtrado por empresa + busca (alimenta os cards)
+  filtered: [],      // base + filtro de status (alimenta a tabela)
+  activeChave: null, // funcionário aberto no modal de registro
+  drawerChave: null, // funcionário aberto na barra lateral
+  empresasSel: []    // empresas marcadas no filtro; vazio = todas
 };
 
 // ── STATUS CONFIG ──────────────────────────────────────────────────────
@@ -433,38 +523,132 @@ function renderUI() {
   document.getElementById('screenMain').style.display = 'flex';
 }
 
+// ── FILTRO DE EMPRESAS (multi-seleção) ──────────────────────────────────
+
 function renderEmpresaFilter() {
-  var sel = document.getElementById('filterEmpresa');
-  var current = sel.value;
-  sel.innerHTML = '<option value="">Todas as empresas</option>' +
-    state.data.empresas.map(function(e) {
-      return '<option value="' + esc(e) + '"' + (e === current ? ' selected' : '') + '>' + esc(e) + '</option>';
-    }).join('');
+  // Descarta seleções de empresas que sumiram dos dados
+  state.empresasSel = state.empresasSel.filter(function(e) {
+    return state.data.empresas.indexOf(e) !== -1;
+  });
+  renderEmpresaOptions();
+  updateEmpresaLabel();
 }
 
-function applyFilters() {
-  var empF    = document.getElementById('filterEmpresa').value;
-  var stF     = document.getElementById('filterStatus').value;
-  var search  = norm(document.getElementById('filterSearch').value);
+function renderEmpresaOptions() {
+  var busca = norm(document.getElementById('empMultiSearch').value);
+  var counts = {};
+  state.data.records.forEach(function(r) { counts[r.empresa] = (counts[r.empresa] || 0) + 1; });
 
-  state.filtered = state.data.records.filter(function(r) {
-    if (empF   && norm(r.empresa) !== norm(empF)) return false;
-    if (stF    && r.status !== stF)               return false;
+  var lista = state.data.empresas.filter(function(e) {
+    return !busca || norm(e).indexOf(busca) !== -1;
+  });
+
+  var wrap = document.getElementById('empMultiList');
+  if (!lista.length) {
+    wrap.innerHTML = '<div class="ms-none">Nenhuma empresa encontrada.</div>';
+    return;
+  }
+  wrap.innerHTML = lista.map(function(e) {
+    var on = state.empresasSel.indexOf(e) !== -1;
+    return '<label class="ms-item">' +
+      '<input type="checkbox" ' + (on ? 'checked' : '') + ' onchange="toggleEmpresa(this,\'' + esc(e).replace(/'/g, "\\'") + '\')">' +
+      '<span>' + esc(e) + '</span>' +
+      '<span class="ms-item-count">' + (counts[e] || 0) + '</span>' +
+      '</label>';
+  }).join('');
+}
+
+function toggleEmpresa(el, empresa) {
+  var i = state.empresasSel.indexOf(empresa);
+  if (el.checked && i === -1)      state.empresasSel.push(empresa);
+  else if (!el.checked && i !== -1) state.empresasSel.splice(i, 1);
+  updateEmpresaLabel();
+  applyFilters();
+}
+
+function selecionarEmpresas(modo) {
+  var busca = norm(document.getElementById('empMultiSearch').value);
+  if (modo === 'none') {
+    state.empresasSel = [];
+  } else {
+    // "Selecionar todas" respeita o texto digitado na busca
+    state.data.empresas.forEach(function(e) {
+      if ((!busca || norm(e).indexOf(busca) !== -1) && state.empresasSel.indexOf(e) === -1) {
+        state.empresasSel.push(e);
+      }
+    });
+  }
+  renderEmpresaOptions();
+  updateEmpresaLabel();
+  applyFilters();
+}
+
+function updateEmpresaLabel() {
+  var n   = state.empresasSel.length;
+  var btn = document.getElementById('empMultiBtn');
+  document.getElementById('empMultiLabel').textContent =
+    n === 0 ? 'Todas as empresas' :
+    n === 1 ? state.empresasSel[0] :
+    n + ' empresas selecionadas';
+  btn.classList.toggle('has-sel', n > 0);
+}
+
+function toggleEmpPanel(ev) {
+  ev.stopPropagation();
+  var box  = document.getElementById('empMulti');
+  var open = box.classList.toggle('open');
+  document.getElementById('empMultiBtn').setAttribute('aria-expanded', open ? 'true' : 'false');
+  if (open) document.getElementById('empMultiSearch').focus();
+}
+
+function fecharEmpPanel() {
+  document.getElementById('empMulti').classList.remove('open');
+  document.getElementById('empMultiBtn').setAttribute('aria-expanded', 'false');
+}
+
+// Fecha o painel ao clicar fora dele
+document.addEventListener('click', function(ev) {
+  var box = document.getElementById('empMulti');
+  if (box && box.classList.contains('open') && !box.contains(ev.target)) fecharEmpPanel();
+});
+
+document.addEventListener('keydown', function(ev) {
+  if (ev.key !== 'Escape') return;
+  if (document.getElementById('empMulti').classList.contains('open')) { fecharEmpPanel(); return; }
+  if (document.getElementById('ferModal').classList.contains('open')) { fecharModal(); return; }
+  if (document.getElementById('ferDrawer').classList.contains('open')) fecharDrawer();
+});
+
+function applyFilters() {
+  var stF    = document.getElementById('filterStatus').value;
+  var search = norm(document.getElementById('filterSearch').value);
+  var empSel = state.empresasSel.map(function(e) { return norm(e); });
+
+  // base = empresa + busca, sem o filtro de status.
+  // Os cards de resumo usam a base para continuarem servindo de panorama:
+  // se seguissem o status também, escolher "Vencido" zeraria todos os outros.
+  state.base = state.data.records.filter(function(r) {
+    if (empSel.length && empSel.indexOf(norm(r.empresa)) === -1) return false;
     if (search && norm(r.nome).indexOf(search) === -1 && norm(r.empresa).indexOf(search) === -1 && norm(r.cargo||'').indexOf(search) === -1) return false;
     return true;
   });
+
+  state.filtered = stF
+    ? state.base.filter(function(r) { return r.status === stF; })
+    : state.base.slice();
 
   renderAlertCards();
   renderTable();
 }
 
 function renderAlertCards() {
-  var all = state.data.records;
+  var all = state.base;
+  var filtrado = all.length !== state.data.records.length;
   var counts = { vencido:0, critico:0, atencao:0, ok:0, gozadas:0 };
   all.forEach(function(r) { counts[r.status]++; });
 
   var cards = [
-    { key:'total',   icon:'👥', value: all.length,        label:'Total' },
+    { key:'total',   icon:'👥', value: all.length,        label: filtrado ? 'Total filtrado' : 'Total' },
     { key:'vencido', icon:'🔴', value: counts.vencido,    label:'Vencidas' },
     { key:'critico', icon:'🟠', value: counts.critico,    label:'Críticas (≤30d)' },
     { key:'atencao', icon:'🟡', value: counts.atencao,    label:'Atenção (≤60d)' },
@@ -510,9 +694,9 @@ function renderTable() {
 
     var btnHtml = state.data.isDP
       ? '<button class="reg-btn" onclick="abrirModal(\'' + esc(r.chave) + '\')">Registrar</button>'
-      : '<button class="reg-btn" onclick="abrirModal(\'' + esc(r.chave) + '\')">Ver períodos</button>';
+      : '<button class="reg-btn" onclick="abrirDrawer(\'' + esc(r.chave) + '\')">Ver períodos</button>';
 
-    var nomeCell = '<span style="font-weight:600">' + esc(r.nome) + '</span>' +
+    var nomeCell = '<button class="name-link" title="Ver histórico de férias" onclick="abrirDrawer(\'' + esc(r.chave) + '\')">' + esc(r.nome) + '</button>' +
       (r.cargo ? '<br><span style="font-size:.72rem;color:var(--gray-400);font-weight:400">' + esc(r.cargo) + '</span>' : '');
 
     return '<tr class="' + cfg.rowCls + '">' +
@@ -529,6 +713,82 @@ function renderTable() {
       '<td>' + btnHtml + '</td>' +
       '</tr>';
   }).join('');
+}
+
+// ── DRAWER LATERAL (histórico de férias) ─────────────────────────────────
+
+function abrirDrawer(chave) {
+  var rec = findRecord(chave);
+  if (!rec) return;
+  state.drawerChave = chave;
+  renderDrawer(rec);
+  document.getElementById('drawerBackdrop').classList.add('open');
+  document.getElementById('ferDrawer').classList.add('open');
+}
+
+function fecharDrawer() {
+  document.getElementById('drawerBackdrop').classList.remove('open');
+  document.getElementById('ferDrawer').classList.remove('open');
+  state.drawerChave = null;
+}
+
+function renderDrawer(rec) {
+  document.getElementById('drawerName').textContent  = rec.nome;
+  document.getElementById('drawerCargo').textContent = rec.cargo || '';
+  document.getElementById('drawerEmp').textContent   = rec.empresa;
+  document.getElementById('drawerRegBtn').style.display = state.data.isDP ? '' : 'none';
+
+  var cfg  = STATUS_CFG[rec.status];
+  var pct  = rec.diasDireito > 0 ? Math.min(100, Math.round(rec.diasGozados / rec.diasDireito * 100)) : 0;
+  var fill = rec.status === 'gozadas' ? 'fill-full' : (rec.status === 'vencido' ? 'fill-venc' : (pct > 0 ? 'fill-part' : 'fill-none'));
+
+  var prazo = rec.status === 'gozadas' ? 'Férias gozadas'
+            : rec.diffDias < 0 ? Math.abs(rec.diffDias) + ' dias em atraso'
+            : rec.diffDias + ' dias restantes';
+
+  var html =
+    '<div style="margin-bottom:16px"><span class="status-pill ' + cfg.pillCls + '">' + cfg.label + '</span></div>' +
+
+    '<div class="drawer-section-title">Situação</div>' +
+    '<div class="drawer-stats">' +
+      drawerStat('Admissão',          esc(rec.admissao || '—')) +
+      drawerStat('Vencimento',        esc(rec.vencimento)) +
+      drawerStat('Limite para gozar', '<span style="color:' + limitColor(rec) + '">' + esc(rec.limite) + '</span>') +
+      drawerStat('Prazo',             '<span style="color:' + limitColor(rec) + '">' + prazo + '</span>') +
+    '</div>' +
+
+    '<div class="drawer-progress">' +
+      '<div class="drawer-progress-top">' +
+        '<span>' + rec.diasGozados + ' de ' + rec.diasDireito + ' dias gozados</span>' +
+        '<span>' + pct + '%</span>' +
+      '</div>' +
+      '<div class="dias-bar-bg"><div class="dias-bar-fill ' + fill + '" style="width:' + pct + '%"></div></div>' +
+      '<div class="drawer-total"><span>Saldo restante</span><span>' + rec.diasRestantes + ' dias</span></div>' +
+    '</div>' +
+
+    '<div class="drawer-section-title">Férias já tiradas' +
+      (rec.periodos && rec.periodos.length ? ' (' + rec.periodos.length + ')' : '') + '</div>' +
+    renderPeriodosHTML(rec);
+
+  document.getElementById('drawerBody').innerHTML = html;
+}
+
+function drawerStat(label, value) {
+  return '<div class="drawer-stat"><div class="drawer-stat-label">' + label + '</div>' +
+         '<div class="drawer-stat-value">' + value + '</div></div>';
+}
+
+// Abre o formulário de registro para o funcionário que está na barra lateral
+function registrarPeloDrawer() {
+  if (state.drawerChave) abrirModal(state.drawerChave);
+}
+
+// Mantém a barra lateral em sincronia após salvar/excluir um período
+function refreshDrawer() {
+  if (!state.drawerChave) return;
+  var rec = findRecord(state.drawerChave);
+  if (rec) renderDrawer(rec);
+  else fecharDrawer();
 }
 
 // ── MODAL ────────────────────────────────────────────────────────────────
@@ -582,12 +842,14 @@ function limitColor(rec) {
 }
 
 function renderModalPeriodos(rec) {
-  var wrap = document.getElementById('modalPeriodos');
+  document.getElementById('modalPeriodos').innerHTML = renderPeriodosHTML(rec);
+}
+
+function renderPeriodosHTML(rec) {
   if (!rec.periodos || !rec.periodos.length) {
-    wrap.innerHTML = '<div class="no-periodos">Nenhum período registrado ainda.</div>';
-    return;
+    return '<div class="no-periodos">Nenhum período registrado ainda.</div>';
   }
-  wrap.innerHTML = rec.periodos.map(function(p) {
+  return rec.periodos.map(function(p) {
     var dates = p.inicio + (p.fim ? ' → ' + p.fim : '');
     var del = state.data.isDP
       ? '<button class="del-period-btn" title="Excluir período" onclick="deletarPeriodo(\'' + esc(p.id) + '\')">🗑</button>'
@@ -666,6 +928,7 @@ function salvarPeriodo() {
             infoItem('Restante', '<strong>' + rec.diasRestantes + ' dias</strong>') +
           '</div>';
       }
+      refreshDrawer();
       // Reset form
       document.getElementById('modalInicio').value = '';
       document.getElementById('modalFim').value    = '';
@@ -692,19 +955,22 @@ function salvarPeriodo() {
 
 function deletarPeriodo(id) {
   if (!confirm('Excluir este período de férias?')) return;
-  var chave = state.activeChave;
+  // Pode ser acionado pelo modal ou pela barra lateral
+  var chave = state.activeChave || state.drawerChave;
 
   google.script.run
     .withSuccessHandler(function(data) {
       state.data = data;
       applyFilters();
       var rec = findRecord(chave);
-      if (rec) renderModalPeriodos(rec);
-      setModalStatus('Período excluído.', 'success');
+      if (rec && state.activeChave) renderModalPeriodos(rec);
+      refreshDrawer();
+      if (state.activeChave) setModalStatus('Período excluído.', 'success');
       setStatus('Período excluído.', 'success');
     })
     .withFailureHandler(function(err) {
-      setModalStatus('Erro: ' + (err.message || err), 'error');
+      if (state.activeChave) setModalStatus('Erro: ' + (err.message || err), 'error');
+      else setStatus('Erro: ' + (err.message || err), 'error');
     })
     .deleteFeriasEntry(TOKEN, { id: id });
 }
@@ -712,7 +978,10 @@ function deletarPeriodo(id) {
 // ── FILTROS ────────────────────────────────────────────────────────────────
 
 function clearFilters() {
-  document.getElementById('filterEmpresa').value = '';
+  state.empresasSel = [];
+  document.getElementById('empMultiSearch').value = '';
+  renderEmpresaOptions();
+  updateEmpresaLabel();
   document.getElementById('filterStatus').value  = '';
   document.getElementById('filterSearch').value  = '';
   applyFilters();
