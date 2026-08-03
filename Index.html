@@ -142,6 +142,9 @@ body{font-family:var(--font);background:var(--gray-100);color:var(--navy-800);mi
 .main-table{width:100%;border-collapse:collapse;font-size:.83rem}
 .main-table th,.main-table td{padding:10px 12px;text-align:center;border-bottom:1px solid var(--gray-200)}
 .main-table th{background:var(--navy-800);color:#fff;font-weight:700;font-size:.68rem;text-transform:uppercase;letter-spacing:.04em;white-space:nowrap;border-bottom:1px solid var(--navy-600);border-left:1px solid rgba(255,255,255,.08)}
+.main-table th.sortable{cursor:pointer;user-select:none;transition:background .15s}
+.main-table th.sortable:hover{background:var(--navy-700)}
+.sort-ind{display:inline-block;margin-left:4px;font-size:.6rem;color:var(--navy-200);min-width:8px}
 .main-table th:first-child{border-left:none;text-align:left}
 .main-table td:first-child{text-align:left}
 .main-table td:nth-child(2){text-align:left}
@@ -352,17 +355,17 @@ body{font-family:var(--font);background:var(--gray-100);color:var(--navy-800);mi
         <table class="main-table">
           <thead>
             <tr>
-              <th>Funcionário</th>
-              <th>Empresa</th>
-              <th>Admissão</th>
-              <th>Período Aquisitivo</th>
-              <th>Limite para Gozar</th>
-              <th>Dias p/ Limite</th>
-              <th>Direito</th>
-              <th>Gozado</th>
-              <th>Restante</th>
-              <th>Progresso</th>
-              <th>Status</th>
+              <th class="sortable" onclick="sortBy('nome')" title="Clique para ordenar">Funcionário<span class="sort-ind" id="si-nome"></span></th>
+              <th class="sortable" onclick="sortBy('empresa')" title="Clique para ordenar">Empresa<span class="sort-ind" id="si-empresa"></span></th>
+              <th class="sortable" onclick="sortBy('admissao')" title="Clique para ordenar">Admissão<span class="sort-ind" id="si-admissao"></span></th>
+              <th class="sortable" onclick="sortBy('periodo')" title="Clique para ordenar">Período Aquisitivo<span class="sort-ind" id="si-periodo"></span></th>
+              <th class="sortable" onclick="sortBy('limite')" title="Clique para ordenar">Limite para Gozar<span class="sort-ind" id="si-limite"></span></th>
+              <th class="sortable" onclick="sortBy('diff')" title="Clique para ordenar">Dias p/ Limite<span class="sort-ind" id="si-diff"></span></th>
+              <th class="sortable" onclick="sortBy('direito')" title="Clique para ordenar">Direito<span class="sort-ind" id="si-direito"></span></th>
+              <th class="sortable" onclick="sortBy('gozado')" title="Clique para ordenar">Gozado<span class="sort-ind" id="si-gozado"></span></th>
+              <th class="sortable" onclick="sortBy('restante')" title="Clique para ordenar">Restante<span class="sort-ind" id="si-restante"></span></th>
+              <th class="sortable" onclick="sortBy('pct')" title="Clique para ordenar">Progresso<span class="sort-ind" id="si-pct"></span></th>
+              <th class="sortable" onclick="sortBy('status')" title="Clique para ordenar">Status<span class="sort-ind" id="si-status"></span></th>
               <th></th>
             </tr>
           </thead>
@@ -517,7 +520,9 @@ var state = {
   activeChave: null, // funcionário aberto no modal de registro
   drawerChave: null, // funcionário aberto na barra lateral
   paChave: null,     // funcionário aberto no modal de novo período aquisitivo
-  empresasSel: []    // empresas marcadas no filtro; vazio = todas
+  empresasSel: [],   // empresas marcadas no filtro; vazio = todas
+  sortKey: null,     // coluna de ordenação ativa; null = ordem padrão (urgência)
+  sortDir: 1         // 1 = crescente, -1 = decrescente
 };
 
 // ── STATUS CONFIG ──────────────────────────────────────────────────────
@@ -681,8 +686,71 @@ function applyFilters() {
     ? state.base.filter(function(r) { return r.status === stF; })
     : state.base.slice();
 
+  aplicarOrdenacao();
   renderAlertCards();
   renderTable();
+}
+
+// ── ORDENAÇÃO POR COLUNA ──────────────────────────────────────────────────
+
+var STATUS_PRIO = { vencido:0, critico:1, atencao:2, ok:3, gozadas:4 };
+
+// 1º clique: crescente · 2º: decrescente · 3º: volta à ordem padrão (urgência)
+function sortBy(key) {
+  if (state.sortKey === key) {
+    if (state.sortDir === 1) state.sortDir = -1;
+    else { state.sortKey = null; state.sortDir = 1; }
+  } else {
+    state.sortKey = key;
+    state.sortDir = 1;
+  }
+  applyFilters();
+}
+
+function sortVal(r, key) {
+  switch (key) {
+    case 'nome':     return norm(r.nome);
+    case 'empresa':  return norm(r.empresa);
+    case 'admissao': return dataOrd(r.admissao);
+    case 'periodo':  return dataOrd(r.periodoIni);
+    case 'limite':   return dataOrd(r.limite);
+    case 'diff':     return r.diffDias;
+    case 'direito':  return r.diasDireito;
+    case 'gozado':   return r.diasGozados;
+    case 'restante': return r.diasRestantes;
+    case 'pct':      return r.diasDireito > 0 ? r.diasGozados / r.diasDireito : 0;
+    case 'status':   return STATUS_PRIO[r.status];
+  }
+  return 0;
+}
+
+// Data dd/mm/aaaa → timestamp; vazio/inválida vai para o fim na ordem crescente
+function dataOrd(s) {
+  var d = parseBR(s);
+  return d ? d.getTime() : Infinity;
+}
+
+function aplicarOrdenacao() {
+  if (!state.sortKey) { atualizarIndicadores(); return; }
+  var k = state.sortKey, dir = state.sortDir;
+  state.filtered.sort(function(a, b) {
+    var va = sortVal(a, k), vb = sortVal(b, k);
+    if (typeof va === 'string') return dir * va.localeCompare(vb, 'pt-BR');
+    if (va === vb) return 0;
+    if (va === Infinity) return 1;   // vazios sempre no fim
+    if (vb === Infinity) return -1;
+    return dir * (va - vb);
+  });
+  atualizarIndicadores();
+}
+
+function atualizarIndicadores() {
+  var keys = ['nome','empresa','admissao','periodo','limite','diff','direito','gozado','restante','pct','status'];
+  keys.forEach(function(k) {
+    var el = document.getElementById('si-' + k);
+    if (!el) return;
+    el.textContent = (state.sortKey === k) ? (state.sortDir === 1 ? '▲' : '▼') : '';
+  });
 }
 
 function renderAlertCards() {
@@ -1152,6 +1220,8 @@ function deletarPeriodo(id) {
 // ── FILTROS ────────────────────────────────────────────────────────────────
 
 function clearFilters() {
+  state.sortKey = null;
+  state.sortDir = 1;
   state.empresasSel = [];
   document.getElementById('empMultiSearch').value = '';
   renderEmpresaOptions();
