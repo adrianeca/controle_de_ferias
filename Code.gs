@@ -101,6 +101,15 @@ function calcLimite_(vencDate) {
   return d;
 }
 
+// Início do período aquisitivo = vencimento - 12 meses + 1 dia
+// Exemplo: vencimento 02/01/2026 → início 03/01/2025
+function periodoIni_(vencDate) {
+  const d = new Date(vencDate.getTime());
+  d.setFullYear(d.getFullYear() - 1);
+  d.setDate(d.getDate() + 1);
+  return d;
+}
+
 // Instrutores não entram no controle de férias.
 // Aceita a grafia "INTRUTOR", que aparece com erro de digitação na folha de origem.
 function isInstrutor_(cargo) {
@@ -281,6 +290,7 @@ function getVencimentosData(token) {
     records.push({
       chave, nome, empresa, cargo, admissao,
       vencimento:   fmtData_(vencDate),
+      periodoIni:   fmtData_(periodoIni_(vencDate)),
       limite:       fmtData_(limite),
       diffDias,
       diasDireito:  diasDir,
@@ -295,7 +305,8 @@ function getVencimentosData(token) {
   records.sort((a, b) =>
     (PRIO[a.status] - PRIO[b.status]) ||
     a.empresa.localeCompare(b.empresa, 'pt-BR') ||
-    a.nome.localeCompare(b.nome, 'pt-BR')
+    a.nome.localeCompare(b.nome, 'pt-BR') ||
+    (a.diffDias - b.diffDias)
   );
 
   return { records, empresas: Object.keys(empSet).sort(), isDP: isDP_(user) };
@@ -345,6 +356,91 @@ function saveFeriasEntry(token, payload) {
   ]);
 
   return getVencimentosData(token);
+}
+
+// =============================================================================
+// NOVO PERÍODO AQUISITIVO
+// Cria uma nova linha na aba VENCIMENTOS para o mesmo funcionário, permitindo
+// controlar mais de um período aquisitivo em aberto por pessoa.
+// =============================================================================
+
+function addPeriodoAquisitivo(token, payload) {
+  const user = getSessionUser_(token);
+  if (!user) throw new Error('Sessão inválida.');
+  if (!isDP_(user)) throw new Error('Acesso restrito ao Departamento Pessoal.');
+
+  const { chave, vencimento, diasDireito } = payload;
+  if (!chave) throw new Error('Funcionário não identificado.');
+  const vencDate = parseDate_(vencimento);
+  if (!vencDate || isNaN(vencDate)) throw new Error('Data de fim do período aquisitivo inválida.');
+
+  const sheet = getVenSheet_();
+  const rows  = sheet.getDataRange().getValues();
+  let base = null;
+  const chavesExistentes = {};
+  for (let i = 1; i < rows.length; i++) {
+    const r  = rows[i];
+    const vd = r[VEN.VENCIMENTO] instanceof Date
+      ? new Date(r[VEN.VENCIMENTO].getTime())
+      : parseDate_(String(r[VEN.VENCIMENTO]));
+    if (!vd) continue;
+    const c = makeChave_(r[VEN.NOME], r[VEN.EMPRESA], vd);
+    chavesExistentes[c] = true;
+    if (c === chave) base = r;
+  }
+  if (!base) throw new Error('Funcionário não encontrado na planilha VENCIMENTOS.');
+
+  const nome = String(base[VEN.NOME]    || '').trim();
+  const emp  = String(base[VEN.EMPRESA] || '').trim();
+  const novaChave = makeChave_(nome, emp, vencDate);
+  if (chavesExistentes[novaChave])
+    throw new Error('Já existe um período aquisitivo com este vencimento para este funcionário.');
+
+  sheet.appendRow([
+    nome, emp,
+    String(base[VEN.CARGO] || '').trim(),
+    base[VEN.ADMISSAO] || '',
+    vencDate,
+    Number(diasDireito) || 30,
+    'Ativo'
+  ]);
+
+  return getVencimentosData(token);
+}
+
+// =============================================================================
+// EXCLUIR PERÍODO AQUISITIVO
+// Remove a linha da aba VENCIMENTOS. Bloqueado se o período já tiver férias
+// registradas na aba FERIAS, para não deixar registros órfãos.
+// =============================================================================
+
+function deletePeriodoAquisitivo(token, payload) {
+  const user = getSessionUser_(token);
+  if (!user) throw new Error('Sessão inválida.');
+  if (!isDP_(user)) throw new Error('Acesso restrito ao Departamento Pessoal.');
+
+  const { chave } = payload;
+  if (!chave) throw new Error('Período aquisitivo não identificado.');
+
+  const ferRows = getFerSheet_().getDataRange().getValues();
+  for (let i = 1; i < ferRows.length; i++) {
+    if (String(ferRows[i][FER.CHAVE]) === chave)
+      throw new Error('Este período aquisitivo tem férias registradas. Exclua primeiro os registros de férias.');
+  }
+
+  const sheet = getVenSheet_();
+  const rows  = sheet.getDataRange().getValues();
+  for (let i = 1; i < rows.length; i++) {
+    const r  = rows[i];
+    const vd = r[VEN.VENCIMENTO] instanceof Date
+      ? new Date(r[VEN.VENCIMENTO].getTime())
+      : parseDate_(String(r[VEN.VENCIMENTO]));
+    if (vd && makeChave_(r[VEN.NOME], r[VEN.EMPRESA], vd) === chave) {
+      sheet.deleteRow(i + 1);
+      return getVencimentosData(token);
+    }
+  }
+  throw new Error('Período aquisitivo não encontrado na planilha.');
 }
 
 // =============================================================================

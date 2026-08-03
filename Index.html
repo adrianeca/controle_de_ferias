@@ -173,6 +173,10 @@ body{font-family:var(--font);background:var(--gray-100);color:var(--navy-800);mi
 .btn-ghost:hover{border-color:var(--gray-300);color:var(--navy-800)}
 .del-period-btn{background:none;border:none;cursor:pointer;color:var(--gray-400);font-size:.9rem;padding:4px 7px;border-radius:6px;transition:background .15s,color .15s}
 .del-period-btn:hover{background:var(--danger-100);color:var(--danger-600)}
+.row-actions{display:inline-flex;align-items:center;gap:3px}
+.icon-btn{background:none;border:none;cursor:pointer;color:var(--gray-400);font-size:1rem;font-weight:700;line-height:1;padding:4px 7px;border-radius:6px;transition:background .15s,color .15s}
+.icon-btn:hover{background:var(--navy-50);color:var(--navy-700)}
+.icon-btn.danger:hover{background:var(--danger-100);color:var(--danger-600)}
 
 /* ── DIAS BAR ── */
 .dias-bar-wrap{display:flex;align-items:center;gap:8px;min-width:120px}
@@ -340,7 +344,7 @@ body{font-family:var(--font);background:var(--gray-100);color:var(--navy-800);mi
       <div class="table-card-header">
         <div>
           <div class="table-card-title">Funcionários</div>
-          <div class="table-card-sub">Ordenado por urgência: vencidos → críticos → atenção → ok → gozadas</div>
+          <div class="table-card-sub">Cada linha é um período aquisitivo · ordenado por urgência: vencidos → críticos → atenção → ok → gozadas</div>
         </div>
         <span class="records-pill" id="recordsPill">0 registros</span>
       </div>
@@ -351,6 +355,7 @@ body{font-family:var(--font);background:var(--gray-100);color:var(--navy-800);mi
               <th>Funcionário</th>
               <th>Empresa</th>
               <th>Admissão</th>
+              <th>Período Aquisitivo</th>
               <th>Limite para Gozar</th>
               <th>Dias p/ Limite</th>
               <th>Direito</th>
@@ -462,6 +467,43 @@ body{font-family:var(--font);background:var(--gray-100);color:var(--navy-800);mi
   </div>
 </div>
 
+<!-- ── Modal: novo período aquisitivo ── -->
+<div id="paModal" class="modal-backdrop">
+  <div class="modal-card">
+    <div class="modal-header">
+      <div class="modal-title">Novo Período Aquisitivo</div>
+      <div class="modal-sub" id="paSub"></div>
+    </div>
+    <div class="modal-body">
+
+      <div class="func-info-card">
+        <div class="func-info-label" style="margin-bottom:6px">Períodos aquisitivos já cadastrados</div>
+        <div id="paExistentes"></div>
+      </div>
+
+      <div class="modal-2col">
+        <div>
+          <label class="modal-label" for="paInicio">Início do Período</label>
+          <input type="date" id="paInicio" class="modal-input" oninput="autoCalcFimPA()">
+        </div>
+        <div>
+          <label class="modal-label" for="paFim">Fim do Período (vencimento)</label>
+          <input type="text" id="paFim" class="modal-input" readonly placeholder="Calculado automaticamente">
+        </div>
+      </div>
+
+      <label class="modal-label" for="paDias">Dias de Direito</label>
+      <input type="number" id="paDias" class="modal-input" min="1" max="60" value="30">
+
+      <div id="paStatus" class="modal-status"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-ghost" onclick="fecharPaModal()">Cancelar</button>
+      <button id="paSaveBtn" class="save-btn" onclick="salvarPeriodoAquisitivo()">Salvar Período Aquisitivo</button>
+    </div>
+  </div>
+</div>
+
 <script>
 var TOKEN   = '<?= token ?>';
 var HUB_URL = 'https://script.google.com/a/macros/brasas.com/s/AKfycbyF7BArYMYFtcQY7_4RTGGPw89yNohAjR7eGptItP-EsnWhNfiZR2ISRaHdAkwlLSlr/exec';
@@ -474,6 +516,7 @@ var state = {
   filtered: [],      // base + filtro de status (alimenta a tabela)
   activeChave: null, // funcionário aberto no modal de registro
   drawerChave: null, // funcionário aberto na barra lateral
+  paChave: null,     // funcionário aberto no modal de novo período aquisitivo
   empresasSel: []    // empresas marcadas no filtro; vazio = todas
 };
 
@@ -615,6 +658,7 @@ document.addEventListener('click', function(ev) {
 document.addEventListener('keydown', function(ev) {
   if (ev.key !== 'Escape') return;
   if (document.getElementById('empMulti').classList.contains('open')) { fecharEmpPanel(); return; }
+  if (document.getElementById('paModal').classList.contains('open')) { fecharPaModal(); return; }
   if (document.getElementById('ferModal').classList.contains('open')) { fecharModal(); return; }
   if (document.getElementById('ferDrawer').classList.contains('open')) fecharDrawer();
 });
@@ -692,9 +736,16 @@ function renderTable() {
       diffTxt = '<span class="diff-badge ' + cls + '">' + r.diffDias + ' dias</span>';
     }
 
-    var btnHtml = state.data.isDP
-      ? '<button class="reg-btn" onclick="abrirModal(\'' + esc(r.chave) + '\')">Registrar</button>'
-      : '<button class="reg-btn" onclick="abrirDrawer(\'' + esc(r.chave) + '\')">Ver períodos</button>';
+    var btnHtml;
+    if (state.data.isDP) {
+      btnHtml = '<div class="row-actions">' +
+        '<button class="reg-btn" onclick="abrirModal(\'' + esc(r.chave) + '\')">Registrar</button>' +
+        '<button class="icon-btn" title="Adicionar novo período aquisitivo" onclick="abrirPaModal(\'' + esc(r.chave) + '\')">+</button>' +
+        '<button class="icon-btn danger" title="Excluir este período aquisitivo" onclick="deletarPeriodoAquisitivo(\'' + esc(r.chave) + '\')">&times;</button>' +
+        '</div>';
+    } else {
+      btnHtml = '<button class="reg-btn" onclick="abrirDrawer(\'' + esc(r.chave) + '\')">Ver períodos</button>';
+    }
 
     var nomeCell = '<button class="name-link" title="Ver histórico de férias" onclick="abrirDrawer(\'' + esc(r.chave) + '\')">' + esc(r.nome) + '</button>' +
       (r.cargo ? '<br><span style="font-size:.72rem;color:var(--gray-400);font-weight:400">' + esc(r.cargo) + '</span>' : '');
@@ -703,6 +754,7 @@ function renderTable() {
       '<td>' + nomeCell + '</td>' +
       '<td>' + esc(r.empresa) + '</td>' +
       '<td style="white-space:nowrap">' + esc(r.admissao || '') + '</td>' +
+      '<td style="white-space:nowrap">' + esc(r.periodoIni) + ' – ' + esc(r.vencimento) + '</td>' +
       '<td style="font-weight:600">' + esc(r.limite) + '</td>' +
       '<td>' + diffTxt + '</td>' +
       '<td>' + r.diasDireito + ' dias</td>' +
@@ -752,7 +804,7 @@ function renderDrawer(rec) {
     '<div class="drawer-section-title">Situação</div>' +
     '<div class="drawer-stats">' +
       drawerStat('Admissão',          esc(rec.admissao || '—')) +
-      drawerStat('Vencimento',        esc(rec.vencimento)) +
+      drawerStat('Período aquisitivo','<span style="font-size:.78rem">' + esc(rec.periodoIni) + ' – ' + esc(rec.vencimento) + '</span>') +
       drawerStat('Limite para gozar', '<span style="color:' + limitColor(rec) + '">' + esc(rec.limite) + '</span>') +
       drawerStat('Prazo',             '<span style="color:' + limitColor(rec) + '">' + prazo + '</span>') +
     '</div>' +
@@ -801,17 +853,7 @@ function abrirModal(chave) {
   document.getElementById('modalTitle').textContent = rec.nome;
   document.getElementById('modalSub').textContent   = rec.empresa;
 
-  // Info card
-  document.getElementById('modalFuncInfo').innerHTML =
-    '<div class="func-info-row">' +
-      (rec.cargo    ? infoItem('Cargo',             esc(rec.cargo))    : '') +
-      (rec.admissao ? infoItem('Admissão',          esc(rec.admissao)) : '') +
-      infoItem('Limite para Gozar', '<strong style="color:' + limitColor(rec) + '">' + rec.limite + '</strong>') +
-      infoItem('Direito', rec.diasDireito + ' dias') +
-      infoItem('Gozado', rec.diasGozados + ' dias') +
-      infoItem('Restante', '<strong>' + rec.diasRestantes + ' dias</strong>') +
-    '</div>';
-
+  renderModalInfo(rec);
   renderModalPeriodos(rec);
 
   // Mostrar/esconder form de adição
@@ -832,6 +874,19 @@ function abrirModal(chave) {
 
 function infoItem(label, value) {
   return '<div class="func-info-item"><div class="func-info-label">' + label + '</div><div class="func-info-value">' + value + '</div></div>';
+}
+
+function renderModalInfo(rec) {
+  document.getElementById('modalFuncInfo').innerHTML =
+    '<div class="func-info-row">' +
+      (rec.cargo    ? infoItem('Cargo',    esc(rec.cargo))    : '') +
+      (rec.admissao ? infoItem('Admissão', esc(rec.admissao)) : '') +
+      infoItem('Período Aquisitivo', esc(rec.periodoIni) + ' – ' + esc(rec.vencimento)) +
+      infoItem('Limite para Gozar', '<strong style="color:' + limitColor(rec) + '">' + rec.limite + '</strong>') +
+      infoItem('Direito', rec.diasDireito + ' dias') +
+      infoItem('Gozado', rec.diasGozados + ' dias') +
+      infoItem('Restante', '<strong>' + rec.diasRestantes + ' dias</strong>') +
+    '</div>';
 }
 
 function limitColor(rec) {
@@ -915,18 +970,9 @@ function salvarPeriodo() {
       state.data = data;
       applyFilters();
       var rec = findRecord(chave);
-      if (rec) renderModalPeriodos(rec);
-      // Atualiza info card
       if (rec) {
-        document.getElementById('modalFuncInfo').innerHTML =
-          '<div class="func-info-row">' +
-            (rec.cargo    ? infoItem('Cargo',         esc(rec.cargo))    : '') +
-            (rec.admissao ? infoItem('Admissão',      esc(rec.admissao)) : '') +
-            infoItem('Limite para Gozar', '<strong style="color:' + limitColor(rec) + '">' + rec.limite + '</strong>') +
-            infoItem('Direito', rec.diasDireito + ' dias') +
-            infoItem('Gozado', rec.diasGozados + ' dias') +
-            infoItem('Restante', '<strong>' + rec.diasRestantes + ' dias</strong>') +
-          '</div>';
+        renderModalPeriodos(rec);
+        renderModalInfo(rec);
       }
       refreshDrawer();
       // Reset form
@@ -949,6 +995,133 @@ function salvarPeriodo() {
       tipo:   tipo,
       obs:    obs
     });
+}
+
+// ── NOVO PERÍODO AQUISITIVO ──────────────────────────────────────────────
+
+function pad2(n) { return (n < 10 ? '0' : '') + n; }
+
+function parseBR(s) {
+  var p = String(s || '').split('/');
+  return p.length === 3 ? new Date(+p[2], +p[1] - 1, +p[0]) : null;
+}
+
+function toISO(d) {
+  return d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate());
+}
+
+// Todos os períodos aquisitivos cadastrados para a mesma pessoa/empresa
+function periodosDaPessoa(rec) {
+  return state.data.records.filter(function(r) {
+    return norm(r.nome) === norm(rec.nome) && norm(r.empresa) === norm(rec.empresa);
+  }).sort(function(a, b) {
+    return parseBR(a.vencimento) - parseBR(b.vencimento);
+  });
+}
+
+function abrirPaModal(chave) {
+  var rec = findRecord(chave);
+  if (!rec) return;
+  state.paChave = chave;
+
+  document.getElementById('paSub').textContent = rec.nome + ' — ' + rec.empresa;
+
+  var existentes = periodosDaPessoa(rec);
+  document.getElementById('paExistentes').innerHTML = existentes.map(function(p) {
+    return '<div style="font-size:.84rem;font-weight:600;color:var(--navy-800);padding:2px 0">' +
+      esc(p.periodoIni) + ' – ' + esc(p.vencimento) +
+      ' <span style="color:var(--gray-400);font-weight:400">(' + p.diasDireito + ' dias de direito)</span></div>';
+  }).join('');
+
+  // Sugere início = dia seguinte ao fim do último período cadastrado
+  var maiorFim = null;
+  existentes.forEach(function(p) {
+    var d = parseBR(p.vencimento);
+    if (d && (!maiorFim || d > maiorFim)) maiorFim = d;
+  });
+  if (maiorFim) {
+    var ini = new Date(maiorFim.getTime());
+    ini.setDate(ini.getDate() + 1);
+    document.getElementById('paInicio').value = toISO(ini);
+  } else {
+    document.getElementById('paInicio').value = '';
+  }
+  autoCalcFimPA();
+
+  document.getElementById('paDias').value = rec.diasDireito || 30;
+  document.getElementById('paStatus').textContent = '';
+  document.getElementById('paStatus').className   = 'modal-status';
+  document.getElementById('paModal').classList.add('open');
+}
+
+function fecharPaModal() {
+  document.getElementById('paModal').classList.remove('open');
+  state.paChave = null;
+}
+
+// Fim do período aquisitivo = início + 12 meses - 1 dia
+function autoCalcFimPA() {
+  var v   = document.getElementById('paInicio').value;
+  var out = document.getElementById('paFim');
+  if (!v) { out.value = ''; return; }
+  var p = v.split('-');
+  var d = new Date(+p[0] + 1, +p[1] - 1, +p[2] - 1);
+  out.value = pad2(d.getDate()) + '/' + pad2(d.getMonth() + 1) + '/' + d.getFullYear();
+}
+
+function setPaStatus(msg, type) {
+  var el = document.getElementById('paStatus');
+  el.textContent = msg;
+  el.className   = 'modal-status ' + type;
+}
+
+function salvarPeriodoAquisitivo() {
+  var inicio = document.getElementById('paInicio').value;
+  var fim    = document.getElementById('paFim').value;
+  var dias   = document.getElementById('paDias').value;
+
+  if (!inicio || !fim) { setPaStatus('Informe o início do período aquisitivo.', 'error'); return; }
+  if (!dias || Number(dias) <= 0) { setPaStatus('Informe os dias de direito (deve ser maior que zero).', 'error'); return; }
+
+  setPaStatus('Salvando...', 'saving');
+  document.getElementById('paSaveBtn').disabled = true;
+
+  google.script.run
+    .withSuccessHandler(function(data) {
+      document.getElementById('paSaveBtn').disabled = false;
+      state.data = data;
+      applyFilters();
+      refreshDrawer();
+      fecharPaModal();
+      setStatus('Novo período aquisitivo cadastrado.', 'success');
+    })
+    .withFailureHandler(function(err) {
+      document.getElementById('paSaveBtn').disabled = false;
+      setPaStatus('Erro: ' + (err.message || err), 'error');
+    })
+    .addPeriodoAquisitivo(TOKEN, {
+      chave:       state.paChave,
+      vencimento:  fim,
+      diasDireito: Number(dias)
+    });
+}
+
+function deletarPeriodoAquisitivo(chave) {
+  var rec = findRecord(chave);
+  if (!rec) return;
+  if (!confirm('Excluir o período aquisitivo ' + rec.periodoIni + ' – ' + rec.vencimento + ' de ' + rec.nome + '?')) return;
+
+  google.script.run
+    .withSuccessHandler(function(data) {
+      state.data = data;
+      applyFilters();
+      refreshDrawer();
+      setStatus('Período aquisitivo excluído.', 'success');
+    })
+    .withFailureHandler(function(err) {
+      setStatus('Erro: ' + (err.message || err), 'error');
+    })
+    .deletePeriodoAquisitivo(TOKEN, { chave: chave });
 }
 
 // ── DELETAR PERÍODO ────────────────────────────────────────────────────────
@@ -999,10 +1172,10 @@ function exportCSV() {
   var rows = state.filtered;
   if (!rows.length) { alert('Nenhum registro para exportar.'); return; }
   var STATUS_LABEL = { vencido:'Vencido', critico:'Crítico', atencao:'Atenção', ok:'OK', gozadas:'Gozadas' };
-  var header = ['Funcionário','Cargo','Empresa','Admissão','Vencimento','Limite para Gozar','Dias Restantes até Limite','Direito (dias)','Gozado (dias)','Restante (dias)','Status'];
+  var header = ['Funcionário','Cargo','Empresa','Admissão','Período Aquisitivo','Limite para Gozar','Dias Restantes até Limite','Direito (dias)','Gozado (dias)','Restante (dias)','Status'];
   var lines  = ['﻿' + header.map(csvEscape).join(',')];
   rows.forEach(function(r) {
-    lines.push([r.nome, r.cargo||'', r.empresa, r.admissao||'', r.vencimento, r.limite, r.diffDias, r.diasDireito, r.diasGozados, r.diasRestantes, STATUS_LABEL[r.status]||r.status].map(csvEscape).join(','));
+    lines.push([r.nome, r.cargo||'', r.empresa, r.admissao||'', r.periodoIni + ' – ' + r.vencimento, r.limite, r.diffDias, r.diasDireito, r.diasGozados, r.diasRestantes, STATUS_LABEL[r.status]||r.status].map(csvEscape).join(','));
   });
   var blob = new Blob([lines.join('\r\n')], {type:'text/csv;charset=utf-8;'});
   var url  = URL.createObjectURL(blob);
@@ -1063,6 +1236,9 @@ function showError(err) {
 // Fecha modal ao clicar fora
 document.getElementById('ferModal').addEventListener('click', function(e) {
   if (e.target === this) fecharModal();
+});
+document.getElementById('paModal').addEventListener('click', function(e) {
+  if (e.target === this) fecharPaModal();
 });
 </script>
 </body>
