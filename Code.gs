@@ -91,13 +91,16 @@ function parseDate_(s) {
   return isNaN(d) ? null : d;
 }
 
-// Limite = vencimento + 11 meses - 1 dia
-// Garante ~30 dias de margem antes do fim do período concessivo (vencimento + 12 meses)
-// Exemplo: vencimento 02/01/2026 → limite 01/12/2026
-function calcLimite_(vencDate) {
+// Data limite para gozo: as férias precisam TERMINAR até o fim do período
+// concessivo (fim do período aquisitivo + 12 meses). O último dia possível
+// para INICIAR é: fim do concessivo - dias de saldo + 1 dia.
+// Exemplo: período aquisitivo até 30/09/2025 com saldo de 5 dias →
+// concessivo até 30/09/2026 → limite para iniciar 26/09/2026.
+// O limite é dinâmico: conforme dias são gozados, o saldo cai e o limite avança.
+function calcLimite_(vencDate, diasRestantes) {
   const d = new Date(vencDate.getTime());
-  d.setMonth(d.getMonth() + 11);
-  d.setDate(d.getDate() - 1);
+  d.setFullYear(d.getFullYear() + 1);
+  d.setDate(d.getDate() - Math.max(0, diasRestantes - 1));
   return d;
 }
 
@@ -269,7 +272,6 @@ function getVencimentosData(token) {
 
     const diasDirRaw = r[VEN.DIAS_DIREITO];
     const diasDir  = diasDirRaw instanceof Date ? 30 : (Number(diasDirRaw) || 30);
-    const limite   = vencDate;
     const chave    = makeChave_(nome, empresa, vencDate);
     const periodos = (fMap[chave] || []).slice().sort((a, b) => {
       const da = parseDate_(a.inicio), db = parseDate_(b.inicio);
@@ -277,6 +279,7 @@ function getVencimentosData(token) {
     });
     const diasGoz  = periodos.reduce((s, p) => s + p.dias, 0);
     const diasRest = Math.max(0, diasDir - diasGoz);
+    const limite   = calcLimite_(vencDate, diasRest);
     const diffDias = Math.ceil((limite - today) / 86400000);
 
     let status;

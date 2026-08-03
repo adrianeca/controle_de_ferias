@@ -931,13 +931,14 @@ function fecharModal() {
 
 // ── AUTO-CALC DIAS ────────────────────────────────────────────────────────
 
+// Contagem inclusiva, como na folha de pagamento: 13/07 a 27/07 = 15 dias
 function autoCalcDias() {
   var ini = document.getElementById('modalInicio').value;
   var fim = document.getElementById('modalFim').value;
   if (!ini || !fim) return;
   var dIni = new Date(ini + 'T00:00:00');
   var dFim = new Date(fim + 'T00:00:00');
-  var diff = Math.round((dFim - dIni) / 86400000);
+  var diff = Math.round((dFim - dIni) / 86400000) + 1;
   if (diff > 0) document.getElementById('modalDias').value = diff;
 }
 
