@@ -104,7 +104,7 @@ body{font-family:var(--font);background:var(--gray-100);color:var(--navy-800);mi
 .drawer-header{padding:20px 22px 16px;border-bottom:1px solid var(--gray-200);flex-shrink:0}
 .drawer-top{display:flex;align-items:flex-start;gap:12px}
 .drawer-name{font-size:1.05rem;font-weight:700;color:var(--navy-800);line-height:1.3}
-.drawer-cargo{font-size:.8rem;color:var(--gray-500);margin-top:2px}
+.drawer-cargo{font-size:.8rem;color:var(--gray-500);margin-top:2px;text-transform:uppercase}
 .drawer-emp{font-size:.76rem;color:var(--gray-400);margin-top:1px}
 .drawer-close{background:none;border:none;font-size:1.35rem;line-height:1;color:var(--gray-400);cursor:pointer;padding:2px 6px;border-radius:7px;flex-shrink:0;transition:background .15s,color .15s}
 .drawer-close:hover{background:var(--gray-100);color:var(--navy-800)}
@@ -119,6 +119,15 @@ body{font-family:var(--font);background:var(--gray-100);color:var(--navy-800);mi
 .drawer-progress{margin-top:12px}
 .drawer-progress-top{display:flex;justify-content:space-between;font-size:.75rem;color:var(--gray-500);margin-bottom:5px}
 .drawer-total{display:flex;align-items:center;justify-content:space-between;background:var(--navy-50);border-radius:9px;padding:9px 13px;margin-top:10px;font-size:.82rem;font-weight:700;color:var(--navy-700)}
+
+/* ── CARD DE PERÍODO AQUISITIVO (drawer) ── */
+.pa-card{border:1px solid var(--gray-200);border-radius:10px;padding:12px 14px;margin-bottom:12px;background:var(--white)}
+.pa-card.sub{background:var(--gray-50)}
+.pa-card-top{display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap}
+.pa-card-title{font-size:.88rem;font-weight:700;color:var(--navy-800);flex:1;min-width:150px}
+.pa-card.sub .pa-card-title{font-size:.79rem;font-weight:600;color:var(--gray-500)}
+.pa-card-actions{display:flex;gap:2px;flex-shrink:0}
+.pa-card-sub-title{font-size:.66rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--gray-400);margin:14px 0 7px}
 
 @media(max-width:520px){
   .drawer{width:100%}
@@ -156,6 +165,14 @@ body{font-family:var(--font);background:var(--gray-100);color:var(--navy-800);mi
 .main-table tbody tr.row-gozadas td:first-child{border-left:3px solid var(--gray-300)}
 .name-link{background:none;border:none;padding:0;font-family:var(--font);font-size:.83rem;font-weight:600;color:var(--navy-700);cursor:pointer;text-align:left;border-bottom:1px dashed var(--navy-200);transition:color .15s,border-color .15s}
 .name-link:hover{color:var(--navy-500);border-bottom-color:var(--navy-500)}
+.row-cargo{font-size:.72rem;color:var(--gray-400);font-weight:400;text-transform:uppercase}
+
+/* ── PERÍODOS AQUISITIVOS EMPILHADOS NA LINHA ──
+   O mais antigo fica no tamanho normal; os mais novos, menores e mais claros. */
+.pa-stack{display:flex;flex-direction:column;gap:2px}
+.pa-line{white-space:nowrap}
+.pa-line.sub{font-size:.71rem;color:var(--gray-400);font-weight:400}
+.pa-count{display:inline-block;margin-left:6px;background:var(--navy-50);color:var(--navy-600);border:1px solid var(--navy-100);border-radius:999px;font-size:.62rem;font-weight:700;padding:1px 7px;vertical-align:middle;white-space:nowrap}
 
 /* ── STATUS PILLS ── */
 .status-pill{display:inline-block;padding:3px 10px;border-radius:999px;font-size:.72rem;font-weight:700;white-space:nowrap}
@@ -197,6 +214,7 @@ body{font-family:var(--font);background:var(--gray-100);color:var(--navy-800);mi
 .diff-badge.atencao{background:#fefce8;color:#ca8a04}
 .diff-badge.ok     {background:var(--success-100);color:var(--success-600)}
 .diff-badge.gozadas{background:var(--gray-100);color:var(--gray-500)}
+.diff-badge.sub{font-size:.65rem;padding:1px 6px;opacity:.6}
 
 /* ── MODAL ── */
 .modal-backdrop{position:fixed;inset:0;z-index:5000;background:rgba(10,22,40,.5);display:none;align-items:center;justify-content:center;padding:16px}
@@ -238,6 +256,46 @@ body{font-family:var(--font);background:var(--gray-100);color:var(--navy-800);mi
 /* ── FORM ADD PERIODO ── */
 .add-periodo-section{border-top:1px solid var(--gray-200);padding-top:14px;margin-top:6px}
 .add-periodo-title{font-size:.78rem;font-weight:700;color:var(--navy-700);margin-bottom:12px;display:flex;align-items:center;gap:6px}
+
+/* ── IMPORTAÇÃO POR UPLOAD ── */
+.imp-drop{border:2px dashed var(--gray-300);border-radius:12px;padding:26px 20px;text-align:center;transition:border-color .15s,background .15s}
+.imp-drop.over{border-color:var(--navy-500);background:var(--navy-50)}
+.imp-drop-icon{font-size:1.7rem;line-height:1}
+.imp-drop-hint{font-size:.8rem;color:var(--gray-400);margin-top:6px}
+.imp-file{margin-top:12px;font-size:.86rem;font-weight:600;color:var(--navy-700)}
+.imp-help{margin-top:14px;background:var(--gray-50);border:1px solid var(--gray-200);border-radius:9px;padding:12px 14px}
+.imp-help-title{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--gray-400);margin-bottom:6px}
+.imp-help ul{margin:0;padding-left:18px}
+.imp-help li{font-size:.8rem;color:var(--gray-600);margin-bottom:3px}
+.imp-resumo{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+.imp-chip{border-radius:9px;padding:8px 13px;min-width:96px;border:1px solid var(--gray-200);background:var(--gray-50)}
+.imp-chip-v{font-size:1.2rem;font-weight:700;line-height:1;color:var(--navy-800)}
+.imp-chip-l{font-size:.63rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--gray-400);margin-top:3px}
+.imp-chip.bom  {background:var(--success-100);border-color:rgba(21,128,61,.2)}
+.imp-chip.bom   .imp-chip-v{color:var(--success-600)}
+.imp-chip.alerta{background:var(--orange-100);border-color:rgba(194,65,12,.2)}
+.imp-chip.alerta .imp-chip-v{color:var(--orange-600)}
+.imp-chip.ruim {background:var(--danger-100);border-color:rgba(220,38,38,.2)}
+.imp-chip.ruim  .imp-chip-v{color:var(--danger-600)}
+.imp-check{display:flex;align-items:center;gap:8px;font-size:.85rem;color:var(--navy-800);margin-bottom:12px;cursor:pointer}
+.imp-check input{width:16px;height:16px;accent-color:var(--navy-600);cursor:pointer}
+.imp-table-wrap{max-height:340px;overflow:auto;border:1px solid var(--gray-200);border-radius:9px}
+.imp-table{width:100%;border-collapse:collapse;font-size:.78rem}
+.imp-table th{position:sticky;top:0;z-index:1;background:var(--navy-800);color:#fff;font-size:.63rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;padding:8px 10px;text-align:left;white-space:nowrap}
+.imp-table td{padding:7px 10px;border-bottom:1px solid var(--gray-200);vertical-align:top}
+.imp-table tr:last-child td{border-bottom:none}
+.imp-table tr.ignorada td{background:var(--gray-50);color:var(--gray-400)}
+.imp-nome{font-weight:600;color:var(--navy-800)}
+.imp-emp{font-size:.7rem;color:var(--gray-400)}
+.imp-item{white-space:nowrap}
+.imp-item.velho{color:var(--gray-400);text-decoration:line-through}
+.imp-tag{display:inline-block;padding:2px 8px;border-radius:999px;font-size:.66rem;font-weight:700;white-space:nowrap}
+.imp-tag.novo    {background:var(--success-100);color:var(--success-600)}
+.imp-tag.repetido{background:var(--gray-100);color:var(--gray-500)}
+.imp-tag.criar   {background:var(--navy-50);color:var(--navy-600)}
+.imp-tag.fora    {background:var(--danger-100);color:var(--danger-600)}
+.imp-tag.nada    {background:var(--gray-100);color:var(--gray-500)}
+.imp-aviso{font-size:.7rem;color:var(--orange-600);margin-top:2px}
 
 /* ── EMPTY STATE ── */
 .empty-state{text-align:center;padding:52px 24px;color:var(--gray-400);font-size:.88rem;font-style:italic}
@@ -336,6 +394,7 @@ body{font-family:var(--font);background:var(--gray-100);color:var(--navy-800);mi
           <input type="text" id="filterSearch" class="search-input" placeholder="Nome do funcionário..." oninput="applyFilters()">
         </div>
         <div class="filter-actions">
+          <button class="export-csv-btn" id="btnImportar" style="display:none" onclick="abrirImpModal()">&#8679; Importar do sistema</button>
           <button class="export-csv-btn" onclick="exportCSV()">&#8681; Exportar CSV</button>
           <button class="clear-filters-btn" onclick="clearFilters()">Limpar filtros</button>
         </div>
@@ -347,7 +406,7 @@ body{font-family:var(--font);background:var(--gray-100);color:var(--navy-800);mi
       <div class="table-card-header">
         <div>
           <div class="table-card-title">Funcionários</div>
-          <div class="table-card-sub">Cada linha é um período aquisitivo · ordenado por urgência: vencidos → críticos → atenção → ok → gozadas</div>
+          <div class="table-card-sub">Cada linha é um funcionário · períodos aquisitivos empilhados (o mais antigo em cima) e dias somados · ordenado por urgência: vencidos → críticos → atenção → ok → gozadas</div>
         </div>
         <span class="records-pill" id="recordsPill">0 registros</span>
       </div>
@@ -507,6 +566,76 @@ body{font-family:var(--font);background:var(--gray-100);color:var(--navy-800);mi
   </div>
 </div>
 
+<!-- ── Modal: importar férias já tiradas (arquivo do sistema) ── -->
+<div id="impModal" class="modal-backdrop">
+  <div class="modal-card" style="max-width:920px">
+    <div class="modal-header">
+      <div class="modal-title">Importar férias já tiradas</div>
+      <div class="modal-sub">Relação de Férias Calculadas exportada do sistema</div>
+    </div>
+    <div class="modal-body">
+
+      <!-- Passo 1: escolher arquivo -->
+      <div id="impPasso1">
+        <div class="imp-drop" id="impDrop">
+          <div class="imp-drop-icon">&#8679;</div>
+          <div style="margin-top:8px">
+            <button type="button" class="btn-ghost" onclick="document.getElementById('impFile').click()">Escolher arquivo</button>
+          </div>
+          <div class="imp-drop-hint">ou arraste o arquivo até aqui</div>
+          <input type="file" id="impFile" accept=".xls,.xlsx,.ods,.csv,.txt" style="display:none" onchange="impArquivoEscolhido(this.files[0])">
+          <div class="imp-file" id="impFileName"></div>
+        </div>
+        <div class="imp-help">
+          <div class="imp-help-title">Como funciona</div>
+          <ul>
+            <li>Aceita <strong>.xls</strong>, <strong>.xlsx</strong> e <strong>CSV</strong> — o relatório sai do sistema já nesse formato.</li>
+            <li>Nada é gravado agora: primeiro você vê a conferência do que será importado.</li>
+            <li>Gozos que já estão registrados são reconhecidos e ignorados, então dá para reenviar o mesmo arquivo sem duplicar.</li>
+            <li>Quem não estiver na aba VENCIMENTOS (instrutores, por exemplo) fica de fora e aparece listado.</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Passo 2: conferência -->
+      <div id="impPasso2" style="display:none">
+        <div class="imp-resumo" id="impResumo"></div>
+        <label class="imp-check">
+          <input type="checkbox" id="impCriarPa" checked>
+          Criar os períodos aquisitivos do relatório que ainda não existem no controle
+        </label>
+        <div class="imp-table-wrap">
+          <table class="imp-table">
+            <thead>
+              <tr>
+                <th>Funcionário</th>
+                <th>Período aquisitivo</th>
+                <th>Gozo no relatório</th>
+                <th>Dias</th>
+                <th>Situação</th>
+              </tr>
+            </thead>
+            <tbody id="impTabela"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Passo 3: resultado -->
+      <div id="impPasso3" style="display:none">
+        <div class="imp-resumo" id="impResultado"></div>
+      </div>
+
+      <div id="impStatus" class="modal-status"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-ghost" onclick="fecharImpModal()">Fechar</button>
+      <button id="impVoltarBtn" class="btn-ghost" style="display:none" onclick="impVoltar()">Escolher outro arquivo</button>
+      <button id="impAnalisarBtn" class="save-btn" onclick="impAnalisar()" disabled>Analisar arquivo</button>
+      <button id="impConfirmarBtn" class="save-btn" style="display:none" onclick="impConfirmar()">Confirmar importação</button>
+    </div>
+  </div>
+</div>
+
 <script>
 var TOKEN   = '<?= token ?>';
 var HUB_URL = 'https://script.google.com/a/macros/brasas.com/s/AKfycbyF7BArYMYFtcQY7_4RTGGPw89yNohAjR7eGptItP-EsnWhNfiZR2ISRaHdAkwlLSlr/exec';
@@ -514,13 +643,14 @@ document.getElementById('hubBackBtn').href = HUB_URL;
 
 var state = {
   user: null,
-  data: null,        // { records, empresas, isDP }
-  base: [],          // filtrado por empresa + busca (alimenta os cards)
+  data: null,        // { records, empresas, isDP } — records = 1 por período aquisitivo
+  base: [],          // grupos (1 por funcionário) filtrados por empresa + busca (alimenta os cards)
   filtered: [],      // base + filtro de status (alimenta a tabela)
-  activeChave: null, // funcionário aberto no modal de registro
-  drawerChave: null, // funcionário aberto na barra lateral
+  activeChave: null, // período aquisitivo aberto no modal de registro
+  drawerPessoa: null,// funcionário aberto na barra lateral (chave nome|empresa)
   paChave: null,     // funcionário aberto no modal de novo período aquisitivo
   empresasSel: [],   // empresas marcadas no filtro; vazio = todas
+  imp: { arquivo:null, analise:null }, // upload da Relação de Férias Calculadas
   sortKey: null,     // coluna de ordenação ativa; null = ordem padrão (urgência)
   sortDir: 1         // 1 = crescente, -1 = decrescente
 };
@@ -563,6 +693,8 @@ function renderUI() {
   var u = state.user;
   document.getElementById('hNome').textContent = u.nome;
   document.getElementById('hRole').textContent = u.role === 'admin' || u.role === 'dp' ? 'DP / Admin' : 'Visualizador';
+
+  document.getElementById('btnImportar').style.display = state.data.isDP ? '' : 'none';
 
   renderEmpresaFilter();
   applyFilters();
@@ -663,10 +795,69 @@ document.addEventListener('click', function(ev) {
 document.addEventListener('keydown', function(ev) {
   if (ev.key !== 'Escape') return;
   if (document.getElementById('empMulti').classList.contains('open')) { fecharEmpPanel(); return; }
+  if (document.getElementById('impModal').classList.contains('open')) { fecharImpModal(); return; }
   if (document.getElementById('paModal').classList.contains('open')) { fecharPaModal(); return; }
   if (document.getElementById('ferModal').classList.contains('open')) { fecharModal(); return; }
   if (document.getElementById('ferDrawer').classList.contains('open')) fecharDrawer();
 });
+
+// ── AGRUPAMENTO POR FUNCIONÁRIO ───────────────────────────────────────────
+// O backend devolve um registro por período aquisitivo. Na tabela principal
+// cada funcionário ocupa uma linha só, com os períodos empilhados e os dias
+// de direito/gozados/restantes somados.
+
+function pessoaKey(r) {
+  return norm(r.nome) + '|' + norm(r.empresa);
+}
+
+function agrupar(records) {
+  var map = {}, out = [];
+  records.forEach(function(r) {
+    var k = pessoaKey(r);
+    if (!map[k]) {
+      map[k] = { key:k, nome:r.nome, empresa:r.empresa, cargo:r.cargo, admissao:r.admissao, periodosAq:[] };
+      out.push(map[k]);
+    }
+    var g = map[k];
+    g.periodosAq.push(r);
+    if (!g.cargo    && r.cargo)    g.cargo    = r.cargo;
+    if (!g.admissao && r.admissao) g.admissao = r.admissao;
+  });
+  out.forEach(consolidarGrupo);
+  return out;
+}
+
+function consolidarGrupo(g) {
+  // Do mais antigo para o mais novo
+  g.periodosAq.sort(function(a, b) {
+    var da = parseBR(a.vencimento), db = parseBR(b.vencimento);
+    return (da && db) ? da - db : 0;
+  });
+
+  g.diasDireito = 0; g.diasGozados = 0; g.diasRestantes = 0;
+  g.periodosAq.forEach(function(p) {
+    g.diasDireito   += p.diasDireito;
+    g.diasGozados   += p.diasGozados;
+    g.diasRestantes += p.diasRestantes;
+  });
+
+  // Período que manda na linha: o mais urgente entre os que ainda têm saldo.
+  // Se todos já foram gozados, usa o último para efeito de exibição.
+  var abertos = g.periodosAq.filter(function(p) { return p.diasRestantes > 0; });
+  g.principal = abertos.length
+    ? abertos.reduce(function(a, b) { return b.diffDias < a.diffDias ? b : a; })
+    : g.periodosAq[g.periodosAq.length - 1];
+  g.status   = g.principal.status;
+  g.limite   = g.principal.limite;
+  g.diffDias = g.principal.diffDias;
+  g.chave    = g.principal.chave;
+}
+
+function findGrupo(key) {
+  if (!state.data) return null;
+  var recs = state.data.records.filter(function(r) { return pessoaKey(r) === key; });
+  return recs.length ? agrupar(recs)[0] : null;
+}
 
 function applyFilters() {
   var stF    = document.getElementById('filterStatus').value;
@@ -676,14 +867,14 @@ function applyFilters() {
   // base = empresa + busca, sem o filtro de status.
   // Os cards de resumo usam a base para continuarem servindo de panorama:
   // se seguissem o status também, escolher "Vencido" zeraria todos os outros.
-  state.base = state.data.records.filter(function(r) {
+  state.base = agrupar(state.data.records.filter(function(r) {
     if (empSel.length && empSel.indexOf(norm(r.empresa)) === -1) return false;
     if (search && norm(r.nome).indexOf(search) === -1 && norm(r.empresa).indexOf(search) === -1 && norm(r.cargo||'').indexOf(search) === -1) return false;
     return true;
-  });
+  }));
 
   state.filtered = stF
-    ? state.base.filter(function(r) { return r.status === stF; })
+    ? state.base.filter(function(g) { return g.status === stF; })
     : state.base.slice();
 
   aplicarOrdenacao();
@@ -707,19 +898,19 @@ function sortBy(key) {
   applyFilters();
 }
 
-function sortVal(r, key) {
+function sortVal(g, key) {
   switch (key) {
-    case 'nome':     return norm(r.nome);
-    case 'empresa':  return norm(r.empresa);
-    case 'admissao': return dataOrd(r.admissao);
-    case 'periodo':  return dataOrd(r.periodoIni);
-    case 'limite':   return dataOrd(r.limite);
-    case 'diff':     return r.diffDias;
-    case 'direito':  return r.diasDireito;
-    case 'gozado':   return r.diasGozados;
-    case 'restante': return r.diasRestantes;
-    case 'pct':      return r.diasDireito > 0 ? r.diasGozados / r.diasDireito : 0;
-    case 'status':   return STATUS_PRIO[r.status];
+    case 'nome':     return norm(g.nome);
+    case 'empresa':  return norm(g.empresa);
+    case 'admissao': return dataOrd(g.admissao);
+    case 'periodo':  return dataOrd(g.periodosAq[0].periodoIni);
+    case 'limite':   return dataOrd(g.limite);
+    case 'diff':     return g.diffDias;
+    case 'direito':  return g.diasDireito;
+    case 'gozado':   return g.diasGozados;
+    case 'restante': return g.diasRestantes;
+    case 'pct':      return g.diasDireito > 0 ? g.diasGozados / g.diasDireito : 0;
+    case 'status':   return STATUS_PRIO[g.status];
   }
   return 0;
 }
@@ -755,9 +946,9 @@ function atualizarIndicadores() {
 
 function renderAlertCards() {
   var all = state.base;
-  var filtrado = all.length !== state.data.records.length;
+  var filtrado = all.length !== agrupar(state.data.records).length;
   var counts = { vencido:0, critico:0, atencao:0, ok:0, gozadas:0 };
-  all.forEach(function(r) { counts[r.status]++; });
+  all.forEach(function(g) { counts[g.status]++; });
 
   var cards = [
     { key:'total',   icon:'👥', value: all.length,        label: filtrado ? 'Total filtrado' : 'Total' },
@@ -776,11 +967,29 @@ function renderAlertCards() {
   }).join('');
 }
 
+// Percentual gozado e cor da barra — serve tanto para um período quanto para o grupo
+function pctGozado(x) {
+  return x.diasDireito > 0 ? Math.min(100, Math.round(x.diasGozados / x.diasDireito * 100)) : 0;
+}
+
+function fillClass(x) {
+  if (x.status === 'gozadas') return 'fill-full';
+  if (x.status === 'vencido') return 'fill-venc';
+  return pctGozado(x) > 0 ? 'fill-part' : 'fill-none';
+}
+
+function diffBadge(p, menor) {
+  var sub = menor ? ' sub' : '';
+  if (p.status === 'gozadas') return '<span class="diff-badge gozadas' + sub + '">—</span>';
+  if (p.diffDias < 0)         return '<span class="diff-badge vencido' + sub + '">' + Math.abs(p.diffDias) + 'd atraso</span>';
+  return '<span class="diff-badge ' + p.status + sub + '">' + p.diffDias + ' dias</span>';
+}
+
 function renderTable() {
   var rows = state.filtered;
   var body = document.getElementById('tableBody');
   var empty = document.getElementById('emptyState');
-  document.getElementById('recordsPill').textContent = rows.length + (rows.length === 1 ? ' registro' : ' registros');
+  document.getElementById('recordsPill').textContent = rows.length + (rows.length === 1 ? ' funcionário' : ' funcionários');
 
   if (!rows.length) {
     body.innerHTML = '';
@@ -789,46 +998,66 @@ function renderTable() {
   }
   empty.style.display = 'none';
 
-  body.innerHTML = rows.map(function(r) {
-    var cfg     = STATUS_CFG[r.status];
-    var pct     = r.diasDireito > 0 ? Math.min(100, Math.round(r.diasGozados / r.diasDireito * 100)) : 0;
-    var fillCls = r.status === 'gozadas' ? 'fill-full' : (r.status === 'vencido' ? 'fill-venc' : (pct > 0 ? 'fill-part' : 'fill-none'));
+  body.innerHTML = rows.map(function(g) {
+    var cfg   = STATUS_CFG[g.status];
+    var pct   = pctGozado(g);
+    var multi = g.periodosAq.length > 1;
 
-    var diffTxt;
-    if (r.status === 'gozadas') {
-      diffTxt = '<span class="diff-badge gozadas">—</span>';
-    } else if (r.diffDias < 0) {
-      diffTxt = '<span class="diff-badge vencido">' + Math.abs(r.diffDias) + 'd atraso</span>';
-    } else {
-      var cls = r.status === 'ok' ? 'ok' : r.status;
-      diffTxt = '<span class="diff-badge ' + cls + '">' + r.diffDias + ' dias</span>';
+    // Período aquisitivo, limite e prazo: uma linha por período aquisitivo.
+    // O mais antigo fica no tamanho normal; os mais novos, menores e mais claros.
+    function stack(fn) {
+      return '<div class="pa-stack">' + g.periodosAq.map(function(p, i) {
+        return '<div class="pa-line' + (i ? ' sub' : '') + '">' + fn(p, i) + '</div>';
+      }).join('') + '</div>';
     }
 
+    var periodosCell = stack(function(p) { return esc(p.periodoIni) + ' – ' + esc(p.vencimento); });
+    var limiteCell   = stack(function(p, i) {
+      return i ? esc(p.limite) : '<span style="font-weight:600">' + esc(p.limite) + '</span>';
+    });
+    var diffCell     = stack(function(p, i) { return diffBadge(p, i > 0); });
+
+    // Dias somados; com mais de um período mostra a composição embaixo
+    var direitoCell = '<div class="pa-stack"><div class="pa-line">' + g.diasDireito + ' dias</div>' +
+      (multi ? '<div class="pa-line sub">' + g.periodosAq.map(function(p) { return p.diasDireito; }).join(' + ') + '</div>' : '') +
+      '</div>';
+    var gozadoCell = '<div class="pa-stack"><div class="pa-line">' + g.diasGozados + ' dias</div>' +
+      (multi ? '<div class="pa-line sub">' + g.periodosAq.map(function(p) { return p.diasGozados; }).join(' + ') + '</div>' : '') +
+      '</div>';
+    var restanteCell = '<div class="pa-stack"><div class="pa-line" style="font-weight:600;color:' +
+      (g.diasRestantes === 0 ? 'var(--success-600)' : (g.status === 'vencido' ? 'var(--danger-600)' : 'var(--navy-800)')) +
+      '">' + g.diasRestantes + ' dias</div>' +
+      (multi ? '<div class="pa-line sub">' + g.periodosAq.map(function(p) { return p.diasRestantes; }).join(' + ') + '</div>' : '') +
+      '</div>';
+
+    // "Registrar" age no período mais antigo que ainda tem saldo.
+    // A exclusão de período aquisitivo fica na barra lateral, onde cada um
+    // aparece separado — evita apagar o período errado.
     var btnHtml;
     if (state.data.isDP) {
       btnHtml = '<div class="row-actions">' +
-        '<button class="reg-btn" onclick="abrirModal(\'' + esc(r.chave) + '\')">Registrar</button>' +
-        '<button class="icon-btn" title="Adicionar novo período aquisitivo" onclick="abrirPaModal(\'' + esc(r.chave) + '\')">+</button>' +
-        '<button class="icon-btn danger" title="Excluir este período aquisitivo" onclick="deletarPeriodoAquisitivo(\'' + esc(r.chave) + '\')">&times;</button>' +
+        '<button class="reg-btn" title="Registrar férias no período ' + esc(g.principal.periodoIni) + ' – ' + esc(g.principal.vencimento) + '" onclick="abrirModal(\'' + jsq(g.principal.chave) + '\')">Registrar</button>' +
+        '<button class="icon-btn" title="Adicionar novo período aquisitivo" onclick="abrirPaModal(\'' + jsq(g.principal.chave) + '\')">+</button>' +
         '</div>';
     } else {
-      btnHtml = '<button class="reg-btn" onclick="abrirDrawer(\'' + esc(r.chave) + '\')">Ver períodos</button>';
+      btnHtml = '<button class="reg-btn" onclick="abrirDrawer(\'' + jsq(g.key) + '\')">Ver períodos</button>';
     }
 
-    var nomeCell = '<button class="name-link" title="Ver histórico de férias" onclick="abrirDrawer(\'' + esc(r.chave) + '\')">' + esc(r.nome) + '</button>' +
-      (r.cargo ? '<br><span style="font-size:.72rem;color:var(--gray-400);font-weight:400">' + esc(r.cargo) + '</span>' : '');
+    var nomeCell = '<button class="name-link" title="Ver histórico de férias" onclick="abrirDrawer(\'' + jsq(g.key) + '\')">' + esc(g.nome) + '</button>' +
+      (multi ? '<span class="pa-count">' + g.periodosAq.length + ' períodos</span>' : '') +
+      (g.cargo ? '<br><span class="row-cargo">' + esc(g.cargo) + '</span>' : '');
 
     return '<tr class="' + cfg.rowCls + '">' +
       '<td>' + nomeCell + '</td>' +
-      '<td>' + esc(r.empresa) + '</td>' +
-      '<td style="white-space:nowrap">' + esc(r.admissao || '') + '</td>' +
-      '<td style="white-space:nowrap">' + esc(r.periodoIni) + ' – ' + esc(r.vencimento) + '</td>' +
-      '<td style="font-weight:600">' + esc(r.limite) + '</td>' +
-      '<td>' + diffTxt + '</td>' +
-      '<td>' + r.diasDireito + ' dias</td>' +
-      '<td>' + r.diasGozados + ' dias</td>' +
-      '<td style="font-weight:600;color:' + (r.diasRestantes === 0 ? 'var(--success-600)' : (r.status === 'vencido' ? 'var(--danger-600)' : 'var(--navy-800)')) + '">' + r.diasRestantes + ' dias</td>' +
-      '<td><div class="dias-bar-wrap"><div class="dias-bar-bg"><div class="dias-bar-fill ' + fillCls + '" style="width:' + pct + '%"></div></div><span style="font-size:.72rem;color:var(--gray-500);white-space:nowrap">' + pct + '%</span></div></td>' +
+      '<td>' + esc(g.empresa) + '</td>' +
+      '<td style="white-space:nowrap">' + esc(g.admissao || '') + '</td>' +
+      '<td>' + periodosCell + '</td>' +
+      '<td>' + limiteCell + '</td>' +
+      '<td>' + diffCell + '</td>' +
+      '<td>' + direitoCell + '</td>' +
+      '<td>' + gozadoCell + '</td>' +
+      '<td>' + restanteCell + '</td>' +
+      '<td><div class="dias-bar-wrap"><div class="dias-bar-bg"><div class="dias-bar-fill ' + fillClass(g) + '" style="width:' + pct + '%"></div></div><span style="font-size:.72rem;color:var(--gray-500);white-space:nowrap">' + pct + '%</span></div></td>' +
       '<td><span class="status-pill ' + cfg.pillCls + '">' + cfg.label + '</span></td>' +
       '<td>' + btnHtml + '</td>' +
       '</tr>';
@@ -837,11 +1066,11 @@ function renderTable() {
 
 // ── DRAWER LATERAL (histórico de férias) ─────────────────────────────────
 
-function abrirDrawer(chave) {
-  var rec = findRecord(chave);
-  if (!rec) return;
-  state.drawerChave = chave;
-  renderDrawer(rec);
+function abrirDrawer(key) {
+  var g = findGrupo(key);
+  if (!g) return;
+  state.drawerPessoa = key;
+  renderDrawer(g);
   document.getElementById('drawerBackdrop').classList.add('open');
   document.getElementById('ferDrawer').classList.add('open');
 }
@@ -849,32 +1078,72 @@ function abrirDrawer(chave) {
 function fecharDrawer() {
   document.getElementById('drawerBackdrop').classList.remove('open');
   document.getElementById('ferDrawer').classList.remove('open');
-  state.drawerChave = null;
+  state.drawerPessoa = null;
 }
 
-function renderDrawer(rec) {
-  document.getElementById('drawerName').textContent  = rec.nome;
-  document.getElementById('drawerCargo').textContent = rec.cargo || '';
-  document.getElementById('drawerEmp').textContent   = rec.empresa;
+function renderDrawer(g) {
+  document.getElementById('drawerName').textContent  = g.nome;
+  document.getElementById('drawerCargo').textContent = g.cargo || '';
+  document.getElementById('drawerEmp').textContent   = g.empresa;
   document.getElementById('drawerRegBtn').style.display = state.data.isDP ? '' : 'none';
 
-  var cfg  = STATUS_CFG[rec.status];
-  var pct  = rec.diasDireito > 0 ? Math.min(100, Math.round(rec.diasGozados / rec.diasDireito * 100)) : 0;
-  var fill = rec.status === 'gozadas' ? 'fill-full' : (rec.status === 'vencido' ? 'fill-venc' : (pct > 0 ? 'fill-part' : 'fill-none'));
-
-  var prazo = rec.status === 'gozadas' ? 'Férias gozadas'
-            : rec.diffDias < 0 ? Math.abs(rec.diffDias) + ' dias em atraso'
-            : rec.diffDias + ' dias restantes';
+  var cfg = STATUS_CFG[g.status];
+  var pct = pctGozado(g);
+  var n   = g.periodosAq.length;
 
   var html =
     '<div style="margin-bottom:16px"><span class="status-pill ' + cfg.pillCls + '">' + cfg.label + '</span></div>' +
 
-    '<div class="drawer-section-title">Situação</div>' +
+    '<div class="drawer-section-title">Resumo' + (n > 1 ? ' (todos os períodos)' : '') + '</div>' +
     '<div class="drawer-stats">' +
-      drawerStat('Admissão',          esc(rec.admissao || '—')) +
-      drawerStat('Período aquisitivo','<span style="font-size:.78rem">' + esc(rec.periodoIni) + ' – ' + esc(rec.vencimento) + '</span>') +
+      drawerStat('Admissão',             esc(g.admissao || '—')) +
+      drawerStat('Períodos aquisitivos', n + (n === 1 ? ' período' : ' períodos')) +
+      drawerStat('Direito total',        g.diasDireito + ' dias') +
+      drawerStat('Gozado total',         g.diasGozados + ' dias') +
+    '</div>' +
+
+    '<div class="drawer-progress">' +
+      '<div class="drawer-progress-top">' +
+        '<span>' + g.diasGozados + ' de ' + g.diasDireito + ' dias gozados</span>' +
+        '<span>' + pct + '%</span>' +
+      '</div>' +
+      '<div class="dias-bar-bg"><div class="dias-bar-fill ' + fillClass(g) + '" style="width:' + pct + '%"></div></div>' +
+      '<div class="drawer-total"><span>Saldo restante</span><span>' + g.diasRestantes + ' dias</span></div>' +
+    '</div>' +
+
+    '<div class="drawer-section-title">Períodos aquisitivos</div>' +
+    g.periodosAq.map(paCardHTML).join('');
+
+  document.getElementById('drawerBody').innerHTML = html;
+}
+
+// Um card por período aquisitivo: o mais antigo em destaque, os seguintes discretos
+function paCardHTML(rec, i) {
+  var cfg   = STATUS_CFG[rec.status];
+  var pct   = pctGozado(rec);
+  var prazo = rec.status === 'gozadas' ? 'Férias gozadas'
+            : rec.diffDias < 0 ? Math.abs(rec.diffDias) + ' dias em atraso'
+            : rec.diffDias + ' dias restantes';
+
+  var acoes = state.data.isDP
+    ? '<div class="pa-card-actions">' +
+        '<button class="icon-btn" title="Registrar férias neste período" onclick="abrirModal(\'' + jsq(rec.chave) + '\')">+</button>' +
+        '<button class="icon-btn danger" title="Excluir este período aquisitivo" onclick="deletarPeriodoAquisitivo(\'' + jsq(rec.chave) + '\')">&times;</button>' +
+      '</div>'
+    : '';
+
+  return '<div class="pa-card' + (i ? ' sub' : '') + '">' +
+    '<div class="pa-card-top">' +
+      '<div class="pa-card-title">' + esc(rec.periodoIni) + ' – ' + esc(rec.vencimento) + '</div>' +
+      '<span class="status-pill ' + cfg.pillCls + '">' + cfg.label + '</span>' +
+      acoes +
+    '</div>' +
+
+    '<div class="drawer-stats">' +
       drawerStat('Limite para gozar', '<span style="color:' + limitColor(rec) + '">' + esc(rec.limite) + '</span>') +
       drawerStat('Prazo',             '<span style="color:' + limitColor(rec) + '">' + prazo + '</span>') +
+      drawerStat('Direito',           rec.diasDireito + ' dias') +
+      drawerStat('Saldo',             rec.diasRestantes + ' dias') +
     '</div>' +
 
     '<div class="drawer-progress">' +
@@ -882,15 +1151,13 @@ function renderDrawer(rec) {
         '<span>' + rec.diasGozados + ' de ' + rec.diasDireito + ' dias gozados</span>' +
         '<span>' + pct + '%</span>' +
       '</div>' +
-      '<div class="dias-bar-bg"><div class="dias-bar-fill ' + fill + '" style="width:' + pct + '%"></div></div>' +
-      '<div class="drawer-total"><span>Saldo restante</span><span>' + rec.diasRestantes + ' dias</span></div>' +
+      '<div class="dias-bar-bg"><div class="dias-bar-fill ' + fillClass(rec) + '" style="width:' + pct + '%"></div></div>' +
     '</div>' +
 
-    '<div class="drawer-section-title">Férias já tiradas' +
+    '<div class="pa-card-sub-title">Férias já tiradas' +
       (rec.periodos && rec.periodos.length ? ' (' + rec.periodos.length + ')' : '') + '</div>' +
-    renderPeriodosHTML(rec);
-
-  document.getElementById('drawerBody').innerHTML = html;
+    renderPeriodosHTML(rec) +
+    '</div>';
 }
 
 function drawerStat(label, value) {
@@ -898,16 +1165,17 @@ function drawerStat(label, value) {
          '<div class="drawer-stat-value">' + value + '</div></div>';
 }
 
-// Abre o formulário de registro para o funcionário que está na barra lateral
+// Abre o formulário de registro no período mais antigo que ainda tem saldo
 function registrarPeloDrawer() {
-  if (state.drawerChave) abrirModal(state.drawerChave);
+  var g = findGrupo(state.drawerPessoa);
+  if (g) abrirModal(g.principal.chave);
 }
 
 // Mantém a barra lateral em sincronia após salvar/excluir um período
 function refreshDrawer() {
-  if (!state.drawerChave) return;
-  var rec = findRecord(state.drawerChave);
-  if (rec) renderDrawer(rec);
+  if (!state.drawerPessoa) return;
+  var g = findGrupo(state.drawerPessoa);
+  if (g) renderDrawer(g);
   else fecharDrawer();
 }
 
@@ -1198,7 +1466,7 @@ function deletarPeriodoAquisitivo(chave) {
 function deletarPeriodo(id) {
   if (!confirm('Excluir este período de férias?')) return;
   // Pode ser acionado pelo modal ou pela barra lateral
-  var chave = state.activeChave || state.drawerChave;
+  var chave = state.activeChave;
 
   google.script.run
     .withSuccessHandler(function(data) {
@@ -1216,6 +1484,217 @@ function deletarPeriodo(id) {
     })
     .deleteFeriasEntry(TOKEN, { id: id });
 }
+
+// ── IMPORTAR FÉRIAS JÁ TIRADAS (arquivo do sistema) ───────────────────────
+
+var IMP_MAX_BYTES = 10 * 1024 * 1024;
+
+function abrirImpModal() {
+  impVoltar();
+  document.getElementById('impModal').classList.add('open');
+}
+
+function fecharImpModal() {
+  document.getElementById('impModal').classList.remove('open');
+}
+
+// Volta ao passo 1, limpando o que já tinha sido analisado
+function impVoltar() {
+  state.imp = { arquivo:null, analise:null };
+  document.getElementById('impPasso1').style.display = '';
+  document.getElementById('impPasso2').style.display = 'none';
+  document.getElementById('impPasso3').style.display = 'none';
+  document.getElementById('impVoltarBtn').style.display    = 'none';
+  document.getElementById('impConfirmarBtn').style.display = 'none';
+  document.getElementById('impAnalisarBtn').style.display  = '';
+  document.getElementById('impAnalisarBtn').disabled = true;
+  document.getElementById('impFile').value = '';
+  document.getElementById('impFileName').textContent = '';
+  document.getElementById('impCriarPa').checked = true;
+  setImpStatus('', '');
+}
+
+function impArquivoEscolhido(file) {
+  if (!file) return;
+  if (file.size > IMP_MAX_BYTES) {
+    setImpStatus('Arquivo muito grande (máximo 10 MB).', 'error');
+    return;
+  }
+  state.imp.arquivo = file;
+  document.getElementById('impFileName').textContent = file.name;
+  document.getElementById('impAnalisarBtn').disabled = false;
+  setImpStatus('', '');
+}
+
+function impAnalisar() {
+  var file = state.imp.arquivo;
+  if (!file) { setImpStatus('Escolha o arquivo do relatório.', 'error'); return; }
+
+  setImpStatus('Lendo o arquivo...', 'saving');
+  document.getElementById('impAnalisarBtn').disabled = true;
+
+  var reader = new FileReader();
+  reader.onerror = function() {
+    document.getElementById('impAnalisarBtn').disabled = false;
+    setImpStatus('Não consegui ler o arquivo do seu computador.', 'error');
+  };
+  reader.onload = function() {
+    var url = String(reader.result);
+    var b64 = url.slice(url.indexOf(',') + 1);
+    google.script.run
+      .withSuccessHandler(function(res) {
+        document.getElementById('impAnalisarBtn').disabled = false;
+        impRenderConferencia(res);
+      })
+      .withFailureHandler(function(err) {
+        document.getElementById('impAnalisarBtn').disabled = false;
+        setImpStatus('Erro: ' + (err.message || err), 'error');
+      })
+      .analisarArquivoFerias(TOKEN, { nome: file.name, mime: file.type || '', dados: b64 });
+  };
+  reader.readAsDataURL(file);
+}
+
+function impChip(v, label, cls) {
+  return '<div class="imp-chip ' + (cls || '') + '">' +
+    '<div class="imp-chip-v">' + v + '</div><div class="imp-chip-l">' + label + '</div></div>';
+}
+
+var IMP_TAG = {
+  'novo':          { cls:'novo',     txt:'Importar' },
+  'ja-importado':  { cls:'repetido', txt:'Já registrado' },
+  'sem-gozo':      { cls:'nada',     txt:'Sem gozo' },
+  'nao-encontrado':{ cls:'fora',     txt:'Não encontrado' },
+  'sem-permissao': { cls:'fora',     txt:'Fora das unidades' },
+  'erro':          { cls:'fora',     txt:'Erro' }
+};
+
+function impRenderConferencia(res) {
+  state.imp.analise = res;
+  var r = res.resumo;
+
+  var chips =
+    impChip(r.linhas,        'Linhas lidas',     '') +
+    impChip(r.novosGozos,    'Gozos a importar', r.novosGozos ? 'bom' : '') +
+    impChip(r.jaExistiam,    'Já registrados',   '') +
+    impChip(r.periodosNovos, 'Períodos a criar', r.periodosNovos ? 'alerta' : '') +
+    impChip(r.naoEncontrados,'Não encontrados',  r.naoEncontrados ? 'ruim' : '') +
+    (r.semPermissao ? impChip(r.semPermissao, 'Fora das unidades', 'ruim')   : '') +
+    (r.comAviso     ? impChip(r.comAviso,     'Alerta de saldo',   'alerta') : '');
+  document.getElementById('impResumo').innerHTML = chips;
+
+  document.getElementById('impTabela').innerHTML = res.registros.map(function(g) {
+    var tag = IMP_TAG[g.status] || IMP_TAG.erro;
+
+    var itens = g.itens.length
+      ? g.itens.map(function(it) {
+          var velho = it.situacao !== 'novo' ? ' velho' : '';
+          return '<div class="imp-item' + velho + '">' + esc(it.tipo) + ': ' +
+                 esc(it.inicio) + ' → ' + esc(it.fim) + '</div>';
+        }).join('')
+      : '<span style="color:var(--gray-400)">—</span>';
+
+    var dias = g.itens.filter(function(it) { return it.situacao === 'novo'; })
+                      .reduce(function(s, it) { return s + it.dias; }, 0);
+
+    var extra = (g.status === 'novo' && !g.temPeriodo)
+      ? ' <span class="imp-tag criar">cria período</span>' : '';
+    var motivo = g.motivo ? '<div class="imp-aviso" style="color:var(--gray-400)">' + esc(g.motivo) + '</div>' : '';
+    var aviso  = g.aviso  ? '<div class="imp-aviso">⚠ ' + esc(g.aviso) + '</div>' : '';
+
+    return '<tr' + (g.status === 'novo' ? '' : ' class="ignorada"') + '>' +
+      '<td><div class="imp-nome">' + esc(g.nome) + '</div>' +
+          '<div class="imp-emp">' + esc(g.empresa) + '</div>' + aviso + '</td>' +
+      '<td class="imp-item">' + esc(g.aqIni) + ' – ' + esc(g.aqFim) + '</td>' +
+      '<td>' + itens + '</td>' +
+      '<td>' + (dias || '—') + '</td>' +
+      '<td><span class="imp-tag ' + tag.cls + '">' + tag.txt + '</span>' + extra + motivo + '</td>' +
+      '</tr>';
+  }).join('');
+
+  document.getElementById('impPasso1').style.display = 'none';
+  document.getElementById('impPasso2').style.display = '';
+  document.getElementById('impAnalisarBtn').style.display  = 'none';
+  document.getElementById('impVoltarBtn').style.display    = '';
+  document.getElementById('impConfirmarBtn').style.display = '';
+  document.getElementById('impConfirmarBtn').disabled = r.novosGozos === 0;
+
+  if (r.novosGozos === 0) {
+    setImpStatus('Nada novo para importar — todos os gozos do arquivo já estão registrados.', 'success');
+  } else {
+    setImpStatus(r.novosGozos + (r.novosGozos === 1 ? ' período de gozo será registrado.' : ' períodos de gozo serão registrados.'), '');
+  }
+}
+
+function impConfirmar() {
+  var an = state.imp.analise;
+  if (!an) return;
+
+  setImpStatus('Importando...', 'saving');
+  document.getElementById('impConfirmarBtn').disabled = true;
+  document.getElementById('impVoltarBtn').disabled    = true;
+
+  // Só as colunas lidas do arquivo: o servidor refaz toda a conferência
+  var registros = an.registros.map(function(g) {
+    return { empresa:g.empresa, nome:g.nome, aqIni:g.aqIni, aqFim:g.aqFim,
+             ferIni:g.ferIni, ferFim:g.ferFim, abIni:g.abIni, abFim:g.abFim };
+  });
+
+  google.script.run
+    .withSuccessHandler(function(res) {
+      document.getElementById('impVoltarBtn').disabled = false;
+      state.data = res.data;
+      applyFilters();
+      refreshDrawer();
+
+      var r = res.resultado;
+      document.getElementById('impResultado').innerHTML =
+        impChip(r.gozosGravados,   'Gozos registrados', r.gozosGravados ? 'bom' : '') +
+        impChip(r.periodosCriados, 'Períodos criados',  '') +
+        impChip(r.jaExistiam,      'Já existiam',       '') +
+        (r.pulados        ? impChip(r.pulados,        'Pulados (sem período)', 'alerta') : '') +
+        (r.naoEncontrados ? impChip(r.naoEncontrados, 'Não encontrados',       'ruim')   : '');
+
+      document.getElementById('impPasso2').style.display = 'none';
+      document.getElementById('impPasso3').style.display = '';
+      document.getElementById('impConfirmarBtn').style.display = 'none';
+      setImpStatus('Importação concluída.', 'success');
+      setStatus('Férias importadas do arquivo do sistema.', 'success');
+    })
+    .withFailureHandler(function(err) {
+      document.getElementById('impConfirmarBtn').disabled = false;
+      document.getElementById('impVoltarBtn').disabled    = false;
+      setImpStatus('Erro: ' + (err.message || err), 'error');
+    })
+    .importarFeriasArquivo(TOKEN, {
+      registros:     registros,
+      criarPeriodos: document.getElementById('impCriarPa').checked,
+      emissao:       an.emissao || '',
+      arquivo:       an.arquivo || (state.imp.arquivo ? state.imp.arquivo.name : '')
+    });
+}
+
+function setImpStatus(msg, type) {
+  var el = document.getElementById('impStatus');
+  el.textContent = msg;
+  el.className   = 'modal-status ' + (type || '');
+}
+
+// Arrastar e soltar o arquivo na área de upload
+(function() {
+  var drop = document.getElementById('impDrop');
+  if (!drop) return;
+  ['dragenter','dragover'].forEach(function(ev) {
+    drop.addEventListener(ev, function(e) { e.preventDefault(); drop.classList.add('over'); });
+  });
+  ['dragleave','drop'].forEach(function(ev) {
+    drop.addEventListener(ev, function(e) { e.preventDefault(); drop.classList.remove('over'); });
+  });
+  drop.addEventListener('drop', function(e) {
+    var f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+    if (f) impArquivoEscolhido(f);
+  });
+})();
 
 // ── FILTROS ────────────────────────────────────────────────────────────────
 
@@ -1243,10 +1722,11 @@ function exportCSV() {
   var rows = state.filtered;
   if (!rows.length) { alert('Nenhum registro para exportar.'); return; }
   var STATUS_LABEL = { vencido:'Vencido', critico:'Crítico', atencao:'Atenção', ok:'OK', gozadas:'Gozadas' };
-  var header = ['Funcionário','Cargo','Empresa','Admissão','Período Aquisitivo','Limite para Gozar','Dias Restantes até Limite','Direito (dias)','Gozado (dias)','Restante (dias)','Status'];
+  var header = ['Funcionário','Cargo','Empresa','Admissão','Períodos Aquisitivos','Qtd. Períodos','Limite para Gozar','Dias Restantes até Limite','Direito (dias)','Gozado (dias)','Restante (dias)','Status'];
   var lines  = ['﻿' + header.map(csvEscape).join(',')];
-  rows.forEach(function(r) {
-    lines.push([r.nome, r.cargo||'', r.empresa, r.admissao||'', r.periodoIni + ' – ' + r.vencimento, r.limite, r.diffDias, r.diasDireito, r.diasGozados, r.diasRestantes, STATUS_LABEL[r.status]||r.status].map(csvEscape).join(','));
+  rows.forEach(function(g) {
+    var pas = g.periodosAq.map(function(p) { return p.periodoIni + ' – ' + p.vencimento; }).join(' | ');
+    lines.push([g.nome, g.cargo||'', g.empresa, g.admissao||'', pas, g.periodosAq.length, g.limite, g.diffDias, g.diasDireito, g.diasGozados, g.diasRestantes, STATUS_LABEL[g.status]||g.status].map(csvEscape).join(','));
   });
   var blob = new Blob([lines.join('\r\n')], {type:'text/csv;charset=utf-8;'});
   var url  = URL.createObjectURL(blob);
@@ -1263,6 +1743,12 @@ function norm(s) {
 
 function esc(s) {
   return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// Valor para dentro de uma string JS entre aspas simples em atributo onclick.
+// Nomes com apóstrofo (ex.: D'Ávila) quebrariam o handler sem isto.
+function jsq(s) {
+  return esc(String(s == null ? '' : s).replace(/\\/g, '\\\\').replace(/'/g, "\\'"));
 }
 
 function findRecord(chave) {
@@ -1310,6 +1796,9 @@ document.getElementById('ferModal').addEventListener('click', function(e) {
 });
 document.getElementById('paModal').addEventListener('click', function(e) {
   if (e.target === this) fecharPaModal();
+});
+document.getElementById('impModal').addEventListener('click', function(e) {
+  if (e.target === this) fecharImpModal();
 });
 </script>
 </body>

@@ -260,7 +260,8 @@ function getVencimentosData(token) {
       const normEmp = norm_(empresa);
       if (!user.unidades.some(u => (UNIDADES_MAP[u] || u) === normEmp)) continue;
     }
-    const cargo    = String(r[VEN.CARGO]     || '').trim();
+    // Cargo sempre em maiúsculo — a folha de origem mistura grafias
+    const cargo    = String(r[VEN.CARGO]     || '').trim().toUpperCase();
     if (isInstrutor_(cargo)) continue;
 
     const admissao = r[VEN.ADMISSAO] ? fmtData_(r[VEN.ADMISSAO] instanceof Date ? r[VEN.ADMISSAO] : parseDate_(String(r[VEN.ADMISSAO]))) : '';
